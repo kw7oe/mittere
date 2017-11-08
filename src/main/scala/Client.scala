@@ -14,7 +14,9 @@ class Client extends Actor with ActorLogging {
 
   def receive = {
     case JoinRequest(serverAddress, portNumber, name) =>
-      log.info(serverAddress, portNumber, name)
+      log.info(serverAddress)
+      log.info(portNumber)
+      
       serverActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/server"))
       username = Some(name)
       serverActor.get ! Server.Join(username.get)

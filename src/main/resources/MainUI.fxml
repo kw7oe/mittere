@@ -45,9 +45,9 @@
                   <Font name="Futura Bold" size="48.0" />
                </font>
             </Label>
-            <TextField fx:id="server" layoutX="252.0" layoutY="188.0" />
+            <TextField fx:id="port" layoutX="252.0" layoutY="188.0" />
             <Label layoutX="204.0" layoutY="142.0" text="Server" />
-            <TextField fx:id="port" layoutX="252.0" layoutY="137.0" />
+            <TextField fx:id="server" layoutX="252.0" layoutY="137.0" />
             <Label layoutX="219.0" layoutY="193.0" text="Port" />
             <Label layoutX="182.0" layoutY="240.0" text="Username" />
             <TextField fx:id="username" layoutX="252.0" layoutY="235.0" />
