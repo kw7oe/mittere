@@ -11,7 +11,8 @@ import collection.JavaConverters._
 object MyApp extends JFXApp {
 
   // Initialize Actor System
-  val config = setConfigWith(getBindingAddress())
+  val address = getBindingAddress()
+  val config = setConfigWith(address)
   val system = ActorSystem("chat", config)
 
   // Initialize Actor
