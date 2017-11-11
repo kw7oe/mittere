@@ -40,19 +40,88 @@
    <center>
       <AnchorPane prefHeight="432.0" prefWidth="599.0" BorderPane.alignment="CENTER">
          <children>
-            <Label layoutX="207.0" layoutY="42.0" prefHeight="64.0" prefWidth="187.0" text="Mittere">
-               <font>
-                  <Font name="Futura Bold" size="48.0" />
-               </font>
-            </Label>
-            <TextField fx:id="port" layoutX="252.0" layoutY="188.0" />
-            <Label layoutX="204.0" layoutY="142.0" text="Server" />
-            <TextField fx:id="server" layoutX="252.0" layoutY="137.0" />
-            <Label layoutX="219.0" layoutY="193.0" text="Port" />
-            <Label layoutX="182.0" layoutY="240.0" text="Username" />
-            <TextField fx:id="username" layoutX="252.0" layoutY="235.0" />
-            <Button fx:id="joinButton" layoutX="279.0" layoutY="295.0" mnemonicParsing="false" onAction="#handleJoin" text="Join" />
+            <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columnConstraints>
+                <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <GridPane alignment="CENTER" prefHeight="120.0" prefWidth="400.0">
+                    <columnConstraints>
+                      <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label prefHeight="64.0" prefWidth="187.0" text="Mittere">
+                           <font>
+                              <Font name="Futura Bold" size="48.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </GridPane>
+                  <GridPane prefHeight="113.0" prefWidth="325.0" GridPane.rowIndex="1">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <TextField fx:id="port" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Port" GridPane.rowIndex="1" />
+                        <TextField fx:id="server" GridPane.columnIndex="1" />
+                        <Label text="Server" />
+                        <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="Username" GridPane.rowIndex="2" />
+                        <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                     </children>
+                  </GridPane>
+                  <GridPane prefHeight="67.0" prefWidth="400.0" GridPane.rowIndex="2">
+                    <columnConstraints>
+                      <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Button fx:id="joinButton" mnemonicParsing="false" onAction="#handleJoin" prefHeight="27.0" prefWidth="72.0" text="Join" />
+                     </children>
+                  </GridPane>
+               </children>
+            </GridPane>
          </children>
       </AnchorPane>
    </center>
+   <left>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Online Users">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Chat Room">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView prefHeight="297.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </left>
 </BorderPane>
