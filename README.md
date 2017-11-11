@@ -18,7 +18,8 @@ All the tasks below are subject to change.
 
 ### FXML
 - [ ] Chat Screen (Similar to telegram/whatsapp without profile picture)
-- [ ] User & Chat Room List (Prefer to be sidebar with tab/accordian)
+- [X] User & Chat Room List (Prefer to be sidebar with tab/accordian)
+- [ ] Dialog for About
 
 ### Backend
 - [ ] Able to create a chat room with other user.

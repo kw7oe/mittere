@@ -80,11 +80,12 @@ object MyApp extends JFXApp {
       println(s"$i = $add")
     }
 
-    println("Please select which interface to bind.")
+    val max = addresses.size - 1
     var selection: Int = 0
     do {
+      println(s"Please select between 0 to ${max} to bind the interface.")
       selection = scala.io.StdIn.readInt()
-    } while (selection <= 0 || selection >= addresses.size)
+    } while (selection <= 0 || selection > max)
 
     return addresses(selection).getHostAddress
   }

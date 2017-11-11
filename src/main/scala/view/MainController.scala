@@ -2,6 +2,7 @@ import scalafx.event.ActionEvent
 import scalafxml.core.{FXMLLoader, NoDependencyResolver}
 import scalafx.Includes._
 import scalafx.scene.control.{Button, Label, TextField, ListView, ListCell}
+import scalafx.scene.layout.GridPane
 import scalafxml.core.macros.sfxml
 import scalafx.collections.ObservableBuffer
 
@@ -12,16 +13,22 @@ class MainController(
   private val server: TextField,
   private val port: TextField,
   private val username: TextField,
-  private val joinButton: Button
+  private val joinButton: Button,
+  private val parentGridPane: GridPane
 ) {
 
   var userListItems: ObservableBuffer[String] = new ObservableBuffer[String]()
-  userList.setItems(userListItems)
+  showJoin("test")
   setupCell()
+  userList.setItems(userListItems)
 
   def handleJoin(action: ActionEvent) {
     import Client._
     MyApp.clientActor ! JoinRequest(server.text.value, port.text.value, username.text.value)
+  }
+
+  def clearJoin(): Unit = {
+    parentGridPane.getChildren().clear()
   }
 
   def showUserList(names: Seq[String]): Unit = {
@@ -34,24 +41,24 @@ class MainController(
 
   // Customize the ListCell in the List View
   private def setupCell() {
-    new ListCell[String]() {
-      styleClass = List("custom_cell")
-      item.onChange { (item, oldValue, newValue) => {
-        if (newValue == null) {
-          graphic = null
-        } else {
-          val loader = new FXMLLoader(null, NoDependencyResolver)
-          val resource = getClass.getResourceAsStream("ListCell.fxml")
-          loader.load(resource)
-          val root = loader.getRoot[javafx.scene.layout.AnchorPane]
-          val controller = loader.getController[ListCellController#Controller]
+    userList.cellFactory = { _ => 
+      new ListCell[String]() {
+        item.onChange { (item, oldValue, newValue) => {
+          if (newValue == null) {
+            graphic = null
+          } else {
+            val loader = new FXMLLoader(null, NoDependencyResolver)
+            val resource = getClass.getResourceAsStream("CustomListCell.fxml")
+            loader.load(resource)
+            val root = loader.getRoot[javafx.scene.layout.AnchorPane]
+            val controller = loader.getController[ListCellController#Controller]
 
-          controller.item = item.toString()
-          graphic = root
-        }
-      }}
+            controller.item = item.value
+            graphic = root
+          }
+        }}
+      }
     }
   }
-
 
 }

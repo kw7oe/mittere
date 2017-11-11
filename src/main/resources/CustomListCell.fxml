@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
+   <children>
+      <Label fx:id="label" prefWidth="200.0" layoutX="8.0" layoutY="5.0" text="Label">
+         <contextMenu>
+            <ContextMenu>
+              <items>
+                <MenuItem fx:id="sendMessageMenuItem" mnemonicParsing="false" onAction="#sendMessage" text="Send Message" />
+                  <MenuItem fx:id="kickMenuItem" mnemonicParsing="false" onAction="#kick" text="Kick" />
+              </items>
+            </ContextMenu>
+         </contextMenu></Label>
+   </children>
+</AnchorPane>

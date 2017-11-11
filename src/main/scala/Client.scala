@@ -24,6 +24,7 @@ class Client extends Actor with ActorLogging {
     case Joined(users)  =>
       otherUsers = users
       MyApp.displayActor ! Display.ShowUserList(otherUsers.values.toSeq)
+      MyApp.displayActor ! Display.ClearJoin
       sender() ! Server.ReceivedJoined(username.get)
       context.become(joined)
     case _ => log.info("Received unknown message")
