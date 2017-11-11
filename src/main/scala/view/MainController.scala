@@ -14,9 +14,8 @@ class MainController(
   private val username: TextField,
   private val joinButton: Button
 ) {
-  var userListItems: ObservableBuffer[String] = new ObservableBuffer[String]()
 
-  // Setup view
+  var userListItems: ObservableBuffer[String] = new ObservableBuffer[String]()
   userList.setItems(userListItems)
   setupCell()
 
@@ -25,7 +24,11 @@ class MainController(
     MyApp.clientActor ! JoinRequest(server.text.value, port.text.value, username.text.value)
   }
 
-  def showJoined(name: String): Unit = {
+  def showUserList(names: Seq[String]): Unit = {
+    userListItems.appendAll(names)
+  }
+
+  def showJoin(name: String): Unit = {
     userListItems += name
   }
 

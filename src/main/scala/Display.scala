@@ -2,7 +2,8 @@ import akka.actor.{Actor, ActorLogging}
 import scalafx.application.Platform
 
 object Display {
-  case class DisplayJoined(username: String)
+  case class ShowJoin(username: String)
+  case class ShowUserList(names: Seq[String])
 }
 
 class Display extends Actor with ActorLogging {
@@ -10,9 +11,13 @@ class Display extends Actor with ActorLogging {
   import Client._
 
   def receive: Receive = {
-    case DisplayJoined(name) =>
+    case ShowJoin(name) =>
       Platform.runLater {
-        MyApp.controller.showJoined(name)
+        MyApp.controller.showJoin(name)
+      }
+    case ShowUserList(names) =>
+      Platform.runLater {
+        MyApp.controller.showUserList(names)
       }
     case _ => log.info("Receive unknown message")
   }

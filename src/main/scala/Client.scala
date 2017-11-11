@@ -10,8 +10,8 @@ object Client {
 
 class Client extends Actor with ActorLogging {
   import Client._
-  import Display._
 
+  // { "akka.tcp://..." -> "username" }
   var otherUsers: Map[String,String] = new HashMap()
   var serverActor: Option[ActorSelection] = None
   var username: Option[String] = None
@@ -22,8 +22,8 @@ class Client extends Actor with ActorLogging {
       username = Some(name)
       serverActor.get ! Server.Join(username.get)
     case Joined(users)  =>
-      log.info(s"Received ${users.size} users from Server")
       otherUsers = users
+      MyApp.displayActor ! Display.ShowUserList(otherUsers.values.toSeq)
       sender() ! Server.ReceivedJoined(username.get)
       context.become(joined)
     case _ => log.info("Received unknown message")
@@ -32,8 +32,7 @@ class Client extends Actor with ActorLogging {
   def joined: Receive = {
     case NewUser(ref, name) =>
       otherUsers += (ref -> name)
-      log.info(s"Received newly joined user: $name")
-      log.info(s"Now have ${otherUsers.size} users online")
+      MyApp.displayActor ! Display.ShowJoin(name)
     case _ => log.info("Received unknown message")
   }
 

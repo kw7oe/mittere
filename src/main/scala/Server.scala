@@ -18,24 +18,18 @@ class Server extends Actor with ActorLogging {
 
   override def receive = {
     case Join(name) =>
-      val senderPath = sender().path.toString
-      // Return user the online clients
       sender() ! Joined(clientNamePairs)
-      log.info(s"${clients.size} clients currently.")
+    case ReceivedJoined(name) =>
+      val senderPath = sender().path.toString
 
       // Notify other users new user has joined
       clients.foreach { userActor =>
-        log.info(s"Send all users to $userActor")
         userActor ! NewUser(senderPath, name)
       }
-    case ReceivedJoined(name) =>
-      val senderPath = sender().path.toString
+
       // Add client to the online clients HashMap
       clientNamePairs += (senderPath -> name)
       clients += sender()
-      log.info(s"${clients.size} clients currently.")
-
-      MyApp.displayActor ! DisplayJoined(name)
     case _ => log.info("Unknown message received.")
   }
 
