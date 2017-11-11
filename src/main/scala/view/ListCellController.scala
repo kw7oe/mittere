@@ -9,15 +9,17 @@ class ListCellController(
   private val sendMessageMenuItem: MenuItem,
   private val kickMenuItem: MenuItem
 ) {
-  private var _item: String = null
+  private var _user: User = null
 
-  def item = _item
-  def item_=(item: String) {
-    _item = item
-    label.text = item
+  def user = _user
+  def user_=(user: User) {
+    _user = user
+    label.text = user.username
   }
 
   def sendMessage(action: ActionEvent) {
+    import Client._
+    MyApp.clientActor ! RequestToMessage(user.actorRef)
   }
 
   def kick(action: ActionEvent) {

@@ -3,8 +3,9 @@ import scalafx.application.Platform
 
 object Display {
   case object ClearJoin
-  case class ShowJoin(username: String)
-  case class ShowUserList(names: Seq[String])
+  case class ShowJoin(username: User)
+  case class ShowUserList(names: Map[String,String])
+  case object ShowChatRoom
 }
 
 class Display extends Actor with ActorLogging {
@@ -16,13 +17,17 @@ class Display extends Actor with ActorLogging {
       Platform.runLater {
         MyApp.controller.clearJoin()
       }
-    case ShowJoin(name) =>
+    case ShowJoin(user) =>
       Platform.runLater {
-        MyApp.controller.showJoin(name)
+        MyApp.controller.showJoin(user)
       }
-    case ShowUserList(names) =>
+    case ShowUserList(users) =>
       Platform.runLater {
-        MyApp.controller.showUserList(names)
+        MyApp.controller.showUserList(users)
+      }
+    case ShowChatRoom =>
+      Platform.runLater {
+        MyApp.controller.showChatRoom
       }
     case _ => log.info("Receive unknown message")
   }

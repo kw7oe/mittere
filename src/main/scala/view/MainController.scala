@@ -8,8 +8,8 @@ import scalafx.collections.ObservableBuffer
 
 @sfxml
 class MainController(
-  private val userList: ListView[String],
-  private val chatRoomList: ListView[String],
+  private val userList: ListView[User],
+  private val chatRoomList: ListView[User],
   private val server: TextField,
   private val port: TextField,
   private val username: TextField,
@@ -17,33 +17,37 @@ class MainController(
   private val parentGridPane: GridPane
 ) {
 
-  var userListItems: ObservableBuffer[String] = new ObservableBuffer[String]()
-  showJoin("test")
+  var userListItems: ObservableBuffer[User] = new ObservableBuffer[User]()
   setupCell()
   userList.setItems(userListItems)
 
   def handleJoin(action: ActionEvent) {
     import Client._
-    MyApp.clientActor ! JoinRequest(server.text.value, port.text.value, username.text.value)
+    MyApp.clientActor ! RequestToJoin(server.text.value, port.text.value, username.text.value)
   }
 
   def clearJoin(): Unit = {
     parentGridPane.getChildren().clear()
   }
 
-  def showUserList(names: Seq[String]): Unit = {
-    userListItems.appendAll(names)
+  def showUserList(names: Map[String, String]): Unit = {
+    val users = User(names)
+    userListItems.appendAll(users)
   }
 
-  def showJoin(name: String): Unit = {
+  def showJoin(name: User): Unit = {
     userListItems += name
+  }
+
+  def showChatRoom(): Unit = {
+    
   }
 
   // Customize the ListCell in the List View
   private def setupCell() {
     userList.cellFactory = { _ => 
-      new ListCell[String]() {
-        item.onChange { (item, oldValue, newValue) => {
+      new ListCell[User]() {
+        item.onChange { (user, oldValue, newValue) => {
           if (newValue == null) {
             graphic = null
           } else {
@@ -53,7 +57,7 @@ class MainController(
             val root = loader.getRoot[javafx.scene.layout.AnchorPane]
             val controller = loader.getController[ListCellController#Controller]
 
-            controller.item = item.value
+            controller.user = user.value
             graphic = root
           }
         }}

@@ -1,11 +1,13 @@
 import akka.actor.{Actor, Props, ActorLogging, ActorSelection}
-import scalafx.collections.{ObservableHashMap, ObservableMap}
-import scala.collection.mutable.{Map, HashMap}
+import scala.collection.immutable.HashMap
 
 object Client {
-  case class JoinRequest(serverAddress: String, portNumber: String, username: String)
+  case class RequestToJoin(serverAddress: String, portNumber: String, username: String)
   case class Joined(otherUsers: Map[String,String])
+
   case class NewUser(ref: String, name: String)
+  case class RequestToMessage(actorRef: String)
+  case object JoinChatRoom
 }
 
 class Client extends Actor with ActorLogging {
@@ -17,13 +19,13 @@ class Client extends Actor with ActorLogging {
   var username: Option[String] = None
 
   def receive = {
-    case JoinRequest(serverAddress, portNumber, name) =>
+    case RequestToJoin(serverAddress, portNumber, name) =>
       serverActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/server"))
       username = Some(name)
       serverActor.get ! Server.Join(username.get)
     case Joined(users)  =>
       otherUsers = users
-      MyApp.displayActor ! Display.ShowUserList(otherUsers.values.toSeq)
+      MyApp.displayActor ! Display.ShowUserList(otherUsers)
       MyApp.displayActor ! Display.ClearJoin
       sender() ! Server.ReceivedJoined(username.get)
       context.become(joined)
@@ -33,7 +35,17 @@ class Client extends Actor with ActorLogging {
   def joined: Receive = {
     case NewUser(ref, name) =>
       otherUsers += (ref -> name)
-      MyApp.displayActor ! Display.ShowJoin(name)
+      val user = User(ref, name)
+      MyApp.displayActor ! Display.ShowJoin(user)
+    case RequestToMessage(actorRef) =>
+      serverActor.get ! Server.CreateChatRoom(actorRef)
+    case JoinChatRoom =>
+      MyApp.displayActor ! Display.ShowChatRoom
+      context.become(chatting)
+    case _ => log.info("Received unknown message")
+  }
+
+  def chatting: Receive = {
     case _ => log.info("Received unknown message")
   }
 
