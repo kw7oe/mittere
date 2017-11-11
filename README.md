@@ -17,17 +17,17 @@ If you face any issues, just ask in the group.
 All the tasks below are subject to change.
 
 ### FXML
-[ ] Chat Screen (Similar to telegram/whatsapp without profile picture)
-[ ] User & Chat Room List (Prefer to be sidebar with tab/accordian)
+- [ ] Chat Screen (Similar to telegram/whatsapp without profile picture)
+- [ ] User & Chat Room List (Prefer to be sidebar with tab/accordian)
 
 ### Backend
-[ ] Able to create a chat room with other user.
-[ ] Able to send and receive message to/from other user.
-[ ] Able to see user is typing.
-[ ] Able to see user is online.
-[ ] Able to create a chat room for multiple user.
-[ ] Able to kick user out of chat room.
-[ ] Able to delete chat room.
+- [ ] Able to create a chat room with other user.
+- [ ] Able to send and receive message to/from other user.
+- [ ] Able to see user is typing.
+- [ ] Able to see user is online.
+- [ ] Able to create a chat room for multiple user.
+- [ ] Able to kick user out of chat room.
+- [ ] Able to delete chat room.
 
 
 
