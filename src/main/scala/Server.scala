@@ -11,6 +11,7 @@ object Server {
 class Server extends Actor with ActorLogging {
   import Client._
   import Server._
+  import Display._
 
   var clientNamePairs: Map[String,String] = new HashMap()
   var clients: ObservableSet[ActorRef] = new ObservableHashSet() 
@@ -33,6 +34,8 @@ class Server extends Actor with ActorLogging {
       clientNamePairs += (senderPath -> name)
       clients += sender()
       log.info(s"${clients.size} clients currently.")
+
+      MyApp.displayActor ! DisplayJoined(name)
     case _ => log.info("Unknown message received.")
   }
 
