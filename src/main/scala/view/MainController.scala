@@ -2,7 +2,7 @@ import scalafx.event.ActionEvent
 import scalafxml.core.{FXMLLoader, NoDependencyResolver}
 import scalafx.Includes._
 import scalafx.scene.control.{Button, Label, TextField, ListView, ListCell}
-import scalafx.scene.layout.GridPane
+import scalafx.scene.layout.BorderPane
 import scalafxml.core.macros.sfxml
 import scalafx.collections.ObservableBuffer
 
@@ -14,7 +14,7 @@ class MainController(
   private val port: TextField,
   private val username: TextField,
   private val joinButton: Button,
-  private val parentGridPane: GridPane
+  private val borderPane: BorderPane
 ) {
 
   var userListItems: ObservableBuffer[User] = new ObservableBuffer[User]()
@@ -27,7 +27,7 @@ class MainController(
   }
 
   def clearJoin(): Unit = {
-    parentGridPane.getChildren().clear()
+    borderPane.center = null
   }
 
   def showUserList(names: Map[String, String]): Unit = {
@@ -40,7 +40,13 @@ class MainController(
   }
 
   def showChatRoom(): Unit = {
+    val loader = new FXMLLoader(null, NoDependencyResolver)
+    val resource = getClass.getResourceAsStream("ChatRoomUI.fxml")
+    loader.load(resource)
+    val root = loader.getRoot[javafx.scene.layout.AnchorPane]
+    val controller = loader.getController[ChatRoomController#Controller]
     
+    borderPane.center = root
   }
 
   // Customize the ListCell in the List View
