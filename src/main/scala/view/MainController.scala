@@ -45,7 +45,6 @@ class MainController(
     loader.load(resource)
     val root = loader.getRoot[javafx.scene.layout.AnchorPane]
     val controller = loader.getController[ChatRoomController#Controller]
-    
     borderPane.center = root
   }
 
