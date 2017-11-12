@@ -92,7 +92,7 @@ object MyApp extends JFXApp {
       println(s"Please select between 0 to ${max} to bind the interface.")
       try{
         selection = scala.io.StdIn.readInt()    
-      }catch{
+      } catch {
         case e: Exception => println("Please select using number")
       }
     } while (selection <= 0 || selection > max)
