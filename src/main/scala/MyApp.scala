@@ -84,7 +84,11 @@ object MyApp extends JFXApp {
     var selection: Int = 0
     do {
       println(s"Please select between 0 to ${max} to bind the interface.")
-      selection = scala.io.StdIn.readInt()
+      try{
+        selection = scala.io.StdIn.readInt()    
+      }catch{
+        case e: Exception => println("Please select using number")
+      }
     } while (selection <= 0 || selection > max)
 
     return addresses(selection).getHostAddress
