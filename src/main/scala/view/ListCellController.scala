@@ -19,7 +19,7 @@ class ListCellController(
 
   def sendMessage(action: ActionEvent) {
     import Client._
-    MyApp.clientActor ! RequestToMessage(user.actorRef)
+    MyApp.clientActor ! RequestToCreateChat(user.actorRef)
   }
 
   def kick(action: ActionEvent) {

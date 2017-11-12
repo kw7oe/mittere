@@ -17,12 +17,13 @@ If you face any issues, just ask in the group.
 All the tasks below are subject to change.
 
 ### FXML
-- [ ] Chat Screen (Similar to telegram/whatsapp without profile picture)
+- [X] Chat Screen (Similar to telegram/whatsapp without profile picture)
 - [X] User & Chat Room List (Prefer to be sidebar with tab/accordian)
+- [ ] Make Chat Screen responsive
 - [ ] Dialog for About
 
 ### Backend
-- [ ] Able to send and receive message to/from other user.
+- [X] Able to send and receive message to/from other user.
 - [ ] Able to see user is typing.
 - [ ] Able to see user is online.
 - [ ] Able to create a chat room for multiple user.
@@ -30,7 +31,7 @@ All the tasks below are subject to change.
 - [ ] Able to delete chat room.
 
 ### Error Handling
-- [ ] Interface Binding should not crash while user do not enter integer.
+- [X] Interface Binding should not crash while user do not enter integer.
 - [ ] Handle when incorrect port and localhost inserted.
 
 

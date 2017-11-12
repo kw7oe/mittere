@@ -20,13 +20,19 @@ object MyApp extends JFXApp {
   val clientActor = system.actorOf(Props[Client], "client")
   val displayActor = system.actorOf(Props[Display], "display")
 
-  // Initialize ScalaFX
-  val ui = getClass.getResourceAsStream("MainUI.fxml")
-  val loader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
-  loader.load(ui)
-  val main = loader.getRoot[javafx.scene.layout.BorderPane]
-  val controller = loader.getController[MainController#Controller]()
-
+  // Initialize Main UI
+  val mainFXML = getClass.getResourceAsStream("MainUI.fxml")
+  val mainLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
+  mainLoader.load(mainFXML)
+  val main = mainLoader.getRoot[javafx.scene.layout.BorderPane]
+  val mainController = mainLoader.getController[MainController#Controller]()
+  
+  // Initialize ChatRoom UI
+  val chatLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
+  val chatRoomFXML = getClass.getResourceAsStream("ChatRoomUI.fxml")
+  chatLoader.load(chatRoomFXML)
+  val chatRoomUI = chatLoader.getRoot[javafx.scene.layout.AnchorPane]
+  val chatController = chatLoader.getController[ChatRoomController#Controller]
   // Initialize Stage
   stage = new PrimaryStage() {
     scene = new Scene() {

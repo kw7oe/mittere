@@ -39,13 +39,8 @@ class MainController(
     userListItems += name
   }
 
-  def showChatRoom(): Unit = {
-    val loader = new FXMLLoader(null, NoDependencyResolver)
-    val resource = getClass.getResourceAsStream("ChatRoomUI.fxml")
-    loader.load(resource)
-    val root = loader.getRoot[javafx.scene.layout.AnchorPane]
-    val controller = loader.getController[ChatRoomController#Controller]
-    borderPane.center = root
+  def showChatRoom(): Unit = {    
+    borderPane.center = MyApp.chatRoomUI
   }
 
   // Customize the ListCell in the List View

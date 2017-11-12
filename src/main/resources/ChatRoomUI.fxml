@@ -6,7 +6,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatRoomController">
    <children>
       <GridPane layoutX="62.0" layoutY="257.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -24,12 +23,12 @@
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                </rowConstraints>
             </GridPane>
-            <TextFlow fx:id="textFlow" layoutX="52.0" layoutY="277.0" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
             <Label fx:id="username" text="Username">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
+            <ListView fx:id="messageList" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
          </children>
          <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />

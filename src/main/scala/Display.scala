@@ -5,6 +5,7 @@ object Display {
   case class ShowJoin(username: User)
   case class ShowUserList(names: Map[String,String])
   case object ShowChatRoom
+  case class AddMessage(from: String, message: String)
 }
 
 class Display extends Actor with ActorLogging {
@@ -14,16 +15,20 @@ class Display extends Actor with ActorLogging {
   def receive: Receive = {
     case ShowJoin(user) =>
       Platform.runLater {
-        MyApp.controller.showJoin(user)
+        MyApp.mainController.showJoin(user)
       }
     case ShowUserList(users) =>
       Platform.runLater {
-        MyApp.controller.showUserList(users)
-        MyApp.controller.clearJoin()
+        MyApp.mainController.showUserList(users)
+        MyApp.mainController.clearJoin()
       }
     case ShowChatRoom =>
       Platform.runLater {
-        MyApp.controller.showChatRoom
+        MyApp.mainController.showChatRoom
+      }
+    case AddMessage(from, message) =>
+      Platform.runLater {
+        MyApp.chatController.addMessage(from, message)
       }
     case _ => log.info("Receive unknown message")
   }

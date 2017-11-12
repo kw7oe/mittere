@@ -5,7 +5,7 @@ object ChatRoom {
   def props(roomId: String, users: Set[String]): Props = 
     Props(new ChatRoom(roomId, users))
 
-  case class Message(value: String)
+  case class Message(from: String, value: String)
 }
 
 class ChatRoom(
@@ -28,8 +28,11 @@ class ChatRoom(
   override def postStop() = log.info(s"Chat Room $roomId stopped")
 
   override def receive = {
-    case Message(message) => 
-      log.info(s"Received $message")
+    case Message(from, message) => 
+      log.info(s"Received $message from $from")
+      userSelections.foreach { actorSelection => 
+        actorSelection ! Client.ReceiveMessage(from, message)
+      }
     case _ => log.info("Receive unknown message")
   }
 }
