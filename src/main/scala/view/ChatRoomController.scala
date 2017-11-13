@@ -3,6 +3,7 @@ import scalafx.scene.control.{Label, Button, TextArea, ListView}
 import scalafx.scene.text.Text
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
+import scala.collection.mutable.ArrayBuffer
 import scalafxml.core.macros.sfxml
 
 @sfxml
@@ -14,11 +15,23 @@ class ChatRoomController(
 ) {
 
   var messages: ObservableBuffer[String] = new ObservableBuffer[String]()
-  messageList.setItems(messages)
+  private var _user: User = null
+  var roomId: String = null
+  messageList.items = messages
+
+  def messages_=(messages: ArrayBuffer[ChatRoom.Message]) {
+    this.messages.appendAll(messages.map { m => s"${m.from}: ${m.value}" })
+  }
+
+  def user = _user
+  def user_=(user: User) {
+    _user = user
+    username.text = _user.username
+  }
 
   def handleSend(action: ActionEvent) {
     import Client._
-    MyApp.clientActor ! RequestToSendMessage(textArea.text.value)
+    MyApp.clientActor ! RequestToSendMessage(roomId, textArea.text.value)
   }
 
   def addMessage(username: String, message: String) {

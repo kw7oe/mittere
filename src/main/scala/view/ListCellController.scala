@@ -1,4 +1,5 @@
 import scalafx.event.ActionEvent
+import scalafx.scene.input.{MouseEvent, MouseButton}
 import scalafx.scene.control.{Label, MenuItem}
 import scalafx.beans.property.StringProperty
 import scalafxml.core.macros.sfxml
@@ -19,7 +20,14 @@ class ListCellController(
 
   def sendMessage(action: ActionEvent) {
     import Client._
-    MyApp.clientActor ! RequestToCreateChat(user.actorRef)
+    MyApp.clientActor ! RequestToCreateChat(user)
+  }
+
+  def handleShowChat(action: MouseEvent) {
+    import Client._
+    if (action.button == MouseButton.Primary) {
+      MyApp.clientActor ! RequestToGetChatWith(user)
+    }
   }
 
   def kick(action: ActionEvent) {

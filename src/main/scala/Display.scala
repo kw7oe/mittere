@@ -1,10 +1,11 @@
 import akka.actor.{Actor, ActorLogging}
+import scala.collection.mutable.ArrayBuffer
 import scalafx.application.Platform
 
 object Display {
   case class ShowJoin(username: User)
   case class ShowUserList(names: Map[String,String])
-  case object ShowChatRoom
+  case class ShowChatRoom(user: User, roomId: String, messages: ArrayBuffer[ChatRoom.Message])
   case class AddMessage(from: String, message: String)
 }
 
@@ -22,8 +23,11 @@ class Display extends Actor with ActorLogging {
         MyApp.mainController.showUserList(users)
         MyApp.mainController.clearJoin()
       }
-    case ShowChatRoom =>
+    case ShowChatRoom(user, roomId, messages) =>
       Platform.runLater {
+        MyApp.chatController.messages = messages
+        MyApp.chatController.user = user
+        MyApp.chatController.roomId = roomId
         MyApp.mainController.showChatRoom
       }
     case AddMessage(from, message) =>

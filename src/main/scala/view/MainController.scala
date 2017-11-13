@@ -19,7 +19,7 @@ class MainController(
 
   var userListItems: ObservableBuffer[User] = new ObservableBuffer[User]()
   setupCell()
-  userList.setItems(userListItems)
+  userList.items = userListItems
 
   def handleJoin(action: ActionEvent) {
     import Client._
@@ -39,7 +39,7 @@ class MainController(
     userListItems += name
   }
 
-  def showChatRoom(): Unit = {    
+  def showChatRoom: Unit = {  
     borderPane.center = MyApp.chatRoomUI
   }
 

@@ -4,11 +4,11 @@ import scala.collection.immutable.HashMap
 import java.util.UUID.randomUUID
 
 
-
 object Server {
   case class Join(username: String)
   case class ReceivedJoined(username: String)
-  case class CreateChatRoom(actorRef: String)
+  case class CreateChatRoom(user: User)
+  case class ChatRoomCreated()
 }
 
 class Server extends Actor with ActorLogging {
@@ -35,16 +35,17 @@ class Server extends Actor with ActorLogging {
       // Add client to the online clients HashMap
       clientNamePairs += (senderPath -> name)
       clients += sender()
-    case CreateChatRoom(actorRef) =>
+    case CreateChatRoom(user) =>
       val senderPath = sender().path.toString
       val roomId = generateUUID
 
-      val users = Set(senderPath, actorRef)
+      val userPaths = Set(senderPath, user.actorPath)
       val chatRoomActor = context.actorOf(
-        ChatRoom.props(roomId, users), s"chatroom-$roomId")
+        ChatRoom.props(roomId, userPaths), s"chatroom-$roomId")
       
       context.watch(chatRoomActor)
       chatRoomToUUID += (chatRoomActor -> roomId)
+      chatRoomActor ! ChatRoom.Invite(user, sender())
     case Terminated(chatRoomActor) =>
       log.info(s"Chat Room $chatRoomActor has been terminated")
       chatRoomToUUID -= chatRoomActor
