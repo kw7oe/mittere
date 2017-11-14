@@ -78,7 +78,7 @@
                      <children>
                         <TextField fx:id="port" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Port" GridPane.rowIndex="1" />
-                        <TextField fx:id="server" GridPane.columnIndex="1" />
+                        <TextField fx:id="server" text="127.0.0.1" GridPane.columnIndex="1" />
                         <Label text="Server" />
                         <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="Username" GridPane.rowIndex="2" />
                         <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="2" />

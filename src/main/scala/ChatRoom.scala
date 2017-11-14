@@ -3,7 +3,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.immutable.HashSet
 
 object ChatRoom {
-  def props(roomId: String, usersPath: Set[String]): Props = 
+  def props(roomId: String, usersPath: Array[String]): Props = 
     Props(new ChatRoom(roomId, usersPath))
 
   case class Join(user: User)
@@ -13,7 +13,7 @@ object ChatRoom {
 
 class ChatRoom(
   roomId: String,
-  usersPath: Set[String]
+  usersPath: Array[String]
 ) extends Actor with ActorLogging {
   import ChatRoom._
 
@@ -22,10 +22,17 @@ class ChatRoom(
 
   override def preStart() = {
     log.info(s"Chat Room $roomId started")
-    usersPath.foreach { actorPath => 
-      val userActor = MyApp.system.actorSelection(actorPath)
+    for (i <- 0 until usersPath.size) {
+      val userActor = MyApp.system.actorSelection(usersPath(i))
       userSelections += userActor
-      userActor ! Client.ChatRoomCreated(roomId)
+      // The operation below is to convert 0 to 1, 1 to 0
+      // The reason is to identify the actorPath to store
+      // in the client side, indicating which user chat 
+      // are equipped with which roomId.
+      val index = (i - 1) * -1 
+      log.info(s"$index")
+      val userPath = usersPath(index)
+      userActor ! Client.ChatRoomCreated(userPath, roomId)
     }
   }
 
@@ -40,7 +47,7 @@ class ChatRoom(
       messages += msg
       log.info(s"Received $message from $from")
       userSelections.foreach { actorSelection => 
-        actorSelection ! Client.ReceiveMessage(from, message)
+        actorSelection ! Client.ReceiveMessage(roomId, msg)
       }
     case _ => log.info("Receive unknown message")
   }

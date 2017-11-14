@@ -9,14 +9,13 @@ object Client {
 
   // Joined
   case class NewUser(ref: String, name: String)
-  case class RequestToCreateChat(user: User)
   case class RequestToGetChatWith(user: User)
-  case class ChatRoomCreated(roomId: String)
+  case class ChatRoomCreated(userPath: String, roomId: String)
   case class JoinChatRoom(user: User, roomId: String, messages: ArrayBuffer[ChatRoom.Message])
 
   // Chatting
   case class RequestToSendMessage(roomId: String, msg: String)
-  case class ReceiveMessage(from: String, msg: String)
+  case class ReceiveMessage(roomId: String, message: ChatRoom.Message)
 }
 
 class Client extends Actor with ActorLogging {
@@ -26,6 +25,7 @@ class Client extends Actor with ActorLogging {
   var otherUsers: Map[String,String] = new HashMap()
   var serverActor: Option[ActorSelection] = None
   var chatRoomActors: Map[String, ActorRef] = new HashMap()
+  var actorPathToChatRoomActors: Map[String, ActorRef] = new HashMap()
   var username: Option[String] = None
 
   def receive = {
@@ -47,15 +47,12 @@ class Client extends Actor with ActorLogging {
       otherUsers += (ref -> name)
       val user = User(ref, name)
       MyApp.displayActor ! Display.ShowJoin(user)
-    case RequestToCreateChat(actorPath) =>
-      serverActor.get ! Server.CreateChatRoom(actorPath)
     // When user click the username on the user lists
     case RequestToGetChatWith(user) => 
       log.info(s"RequestToGetChatWith $user")
 
       // Check if ChatRoom already existed
-      val actorSelection = chatRoomActors.get(user.actorPath)
-
+      val actorSelection = actorPathToChatRoomActors.get(user.actorPath)
 
       actorSelection match {
         // Join if exist
@@ -64,18 +61,20 @@ class Client extends Actor with ActorLogging {
         case None => serverActor.get ! Server.CreateChatRoom(user)
       }
     // Get notified when chat room is created
-    case ChatRoomCreated(roomId) =>
+    case ChatRoomCreated(userPath, roomId) =>
       log.info(s"ChatRoomCreated with $roomId")
+      actorPathToChatRoomActors += (userPath -> sender())
       chatRoomActors += (roomId -> sender())
     // Get notified to show chat room
     case JoinChatRoom(user, roomId, messages) =>
+      log.info(s"Join chatRoom $user - $roomId")
       MyApp.displayActor ! Display.ShowChatRoom(user, roomId, messages)
     // Request to send message
     case RequestToSendMessage(roomId, msg) =>
       val actor = chatRoomActors.get(roomId)
       actor.get ! ChatRoom.Message(username.get, msg)
-    case ReceiveMessage(from, msg) =>
-      MyApp.displayActor ! Display.AddMessage(from, msg)
+    case ReceiveMessage(roomId, msg) =>
+      MyApp.displayActor ! Display.AddMessage(roomId, msg)
     case _ => log.info("Received unknown message")
   }
 

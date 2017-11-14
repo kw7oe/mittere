@@ -20,7 +20,8 @@ class ChatRoomController(
   messageList.items = messages
 
   def messages_=(messages: ArrayBuffer[ChatRoom.Message]) {
-    this.messages.appendAll(messages.map { m => s"${m.from}: ${m.value}" })
+    this.messages = ObservableBuffer(messages.map { m => convertMessageToString(m) })
+    messageList.items = this.messages
   }
 
   def user = _user
@@ -34,7 +35,11 @@ class ChatRoomController(
     MyApp.clientActor ! RequestToSendMessage(roomId, textArea.text.value)
   }
 
-  def addMessage(username: String, message: String) {
-    messages += s"$username: $message"
+  def addMessage(message: ChatRoom.Message) {
+    messages += convertMessageToString(message)
   } 
+
+  private def convertMessageToString(message: ChatRoom.Message): String = {
+    return s"${message.from}: ${message.value}"
+  }
 }

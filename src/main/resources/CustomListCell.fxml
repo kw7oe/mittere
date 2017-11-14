@@ -10,7 +10,6 @@
          <contextMenu>
             <ContextMenu>
               <items>
-                <MenuItem fx:id="sendMessageMenuItem" mnemonicParsing="false" onAction="#sendMessage" text="Send Message" />
                   <MenuItem fx:id="kickMenuItem" mnemonicParsing="false" onAction="#kick" text="Kick" />
               </items>
             </ContextMenu>

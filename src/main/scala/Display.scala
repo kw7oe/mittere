@@ -6,7 +6,7 @@ object Display {
   case class ShowJoin(username: User)
   case class ShowUserList(names: Map[String,String])
   case class ShowChatRoom(user: User, roomId: String, messages: ArrayBuffer[ChatRoom.Message])
-  case class AddMessage(from: String, message: String)
+  case class AddMessage(roomId: String, message: ChatRoom.Message)
 }
 
 class Display extends Actor with ActorLogging {
@@ -30,10 +30,13 @@ class Display extends Actor with ActorLogging {
         MyApp.chatController.roomId = roomId
         MyApp.mainController.showChatRoom
       }
-    case AddMessage(from, message) =>
-      Platform.runLater {
-        MyApp.chatController.addMessage(from, message)
+    case AddMessage(roomId, message) =>
+      if (roomId == MyApp.chatController.roomId) {
+        Platform.runLater {
+          MyApp.chatController.addMessage(message)
+        }
       }
+      
     case _ => log.info("Receive unknown message")
   }
 }

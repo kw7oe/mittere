@@ -14,8 +14,20 @@ object Server {
 class Server extends Actor with ActorLogging {
   import Server._
 
+  // A collection of client username and actor path.
+  //
+  // E.g. 
+  //   { "akka.tcp://..." -> "username" }
   var clientNamePairs: Map[String,String] = new HashMap()
+
+  // A collection of joined Client ActorRef
   var clients: ObservableSet[ActorRef] = new ObservableHashSet() 
+
+  // A collection of created ChatRoom ActorRef and their 
+  // roomId
+  //
+  // E.g 
+  //   { "actorRef" -> 'random_uuid' }
   var chatRoomToUUID: Map[ActorRef, String] = new HashMap()
 
   override def preStart() = log.info("Server started")
@@ -23,6 +35,7 @@ class Server extends Actor with ActorLogging {
 
   override def receive = {
     case Join(name) =>
+      // Send all online users details to client
       sender() ! Client.Joined(clientNamePairs)
     case ReceivedJoined(name) =>
       val senderPath = sender().path.toString
@@ -32,14 +45,16 @@ class Server extends Actor with ActorLogging {
         userActor ! Client.NewUser(senderPath, name)
       }
 
-      // Add client to the online clients HashMap
+      log.info(s"$clients")
+
+      // Keep track of the clients info
       clientNamePairs += (senderPath -> name)
       clients += sender()
     case CreateChatRoom(user) =>
       val senderPath = sender().path.toString
       val roomId = generateUUID
 
-      val userPaths = Set(senderPath, user.actorPath)
+      val userPaths = Array(senderPath, user.actorPath)
       val chatRoomActor = context.actorOf(
         ChatRoom.props(roomId, userPaths), s"chatroom-$roomId")
       

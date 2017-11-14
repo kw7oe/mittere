@@ -7,7 +7,6 @@ import scalafxml.core.macros.sfxml
 @sfxml
 class ListCellController(
   private val label: Label,
-  private val sendMessageMenuItem: MenuItem,
   private val kickMenuItem: MenuItem
 ) {
   private var _user: User = null
@@ -16,11 +15,6 @@ class ListCellController(
   def user_=(user: User) {
     _user = user
     label.text = user.username
-  }
-
-  def sendMessage(action: ActionEvent) {
-    import Client._
-    MyApp.clientActor ! RequestToCreateChat(user)
   }
 
   def handleShowChat(action: MouseEvent) {
