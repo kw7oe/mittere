@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -12,8 +13,8 @@
          <children>
             <GridPane prefHeight="60.0" prefWidth="543.0" GridPane.rowIndex="2">
                <children>
-                  <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleSend" text="Send" GridPane.columnIndex="1" />
-                  <TextArea fx:id="textArea" prefHeight="38.0" prefWidth="336.0" promptText="Enter your message..." />
+                  <Button fx:id="sendButton" defaultButton="true" mnemonicParsing="false" onAction="#handleSend" text="Send" GridPane.columnIndex="1" />
+                  <TextArea fx:id="textArea" onKeyTyped="#handleTyped" prefHeight="38.0" prefWidth="336.0" promptText="Enter your message..." />
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
@@ -23,12 +24,17 @@
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                </rowConstraints>
             </GridPane>
-            <Label fx:id="username" text="Username">
-               <GridPane.margin>
-                  <Insets left="10.0" />
-               </GridPane.margin>
-            </Label>
             <ListView fx:id="messageList" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label fx:id="username" text="Username" />
+                  <Label fx:id="typingLabel" alignment="CENTER" contentDisplay="CENTER">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
          </children>
          <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />

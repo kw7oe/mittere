@@ -24,8 +24,8 @@ All the tasks below are subject to change.
 
 ### Backend
 - [X] Able to send and receive message to/from other user.
-- [ ] Able to see user is typing.
-- [ ] Able to see user is online.
+- [X] Able to see user is typing.
+- [X] Able to see user is online.
 - [ ] Able to create a chat room for multiple user.
 - [ ] Able to kick user out of chat room.
 - [ ] Able to delete chat room.
@@ -33,6 +33,7 @@ All the tasks below are subject to change.
 ### Error Handling
 - [X] Interface Binding should not crash while user do not enter integer.
 - [ ] Handle when incorrect port and localhost inserted.
+- [ ] Remove user from online when disconnected.
 
 
 

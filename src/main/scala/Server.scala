@@ -45,8 +45,6 @@ class Server extends Actor with ActorLogging {
         userActor ! Client.NewUser(senderPath, name)
       }
 
-      log.info(s"$clients")
-
       // Keep track of the clients info
       clientNamePairs += (senderPath -> name)
       clients += sender()
@@ -61,9 +59,9 @@ class Server extends Actor with ActorLogging {
       context.watch(chatRoomActor)
       chatRoomToUUID += (chatRoomActor -> roomId)
       chatRoomActor ! ChatRoom.Invite(user, sender())
-    case Terminated(chatRoomActor) =>
-      log.info(s"Chat Room $chatRoomActor has been terminated")
-      chatRoomToUUID -= chatRoomActor
+    case Terminated(actor) =>
+      log.info(s"$actor has been terminated")
+      chatRoomToUUID -= actor
     case _ => log.info("Unknown message received.")
   }
 

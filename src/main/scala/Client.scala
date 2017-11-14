@@ -14,6 +14,8 @@ object Client {
   case class JoinChatRoom(user: User, roomId: String, messages: ArrayBuffer[ChatRoom.Message])
 
   // Chatting
+  case class Typing(roomId: String)
+  case class ReceiveShowTyping(roomId: String, username: String)
   case class RequestToSendMessage(roomId: String, msg: String)
   case class ReceiveMessage(roomId: String, message: ChatRoom.Message)
 }
@@ -69,6 +71,13 @@ class Client extends Actor with ActorLogging {
     case JoinChatRoom(user, roomId, messages) =>
       log.info(s"Join chatRoom $user - $roomId")
       MyApp.displayActor ! Display.ShowChatRoom(user, roomId, messages)
+    case Typing(roomId) =>
+      val actor = chatRoomActors.get(roomId)
+      actor.get ! ChatRoom.ShowTyping(username.get)
+    case ReceiveShowTyping(roomId, username) =>
+      if (username != this.username.get) {        
+        MyApp.displayActor ! Display.ShowTyping(roomId, username)
+      }
     // Request to send message
     case RequestToSendMessage(roomId, msg) =>
       val actor = chatRoomActors.get(roomId)

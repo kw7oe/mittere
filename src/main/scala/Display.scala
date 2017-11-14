@@ -6,6 +6,7 @@ object Display {
   case class ShowJoin(username: User)
   case class ShowUserList(names: Map[String,String])
   case class ShowChatRoom(user: User, roomId: String, messages: ArrayBuffer[ChatRoom.Message])
+  case class ShowTyping(roomId: String, username: String)
   case class AddMessage(roomId: String, message: ChatRoom.Message)
 }
 
@@ -30,6 +31,12 @@ class Display extends Actor with ActorLogging {
         MyApp.chatController.roomId = roomId
         MyApp.mainController.showChatRoom
       }
+    case ShowTyping(roomId, username) =>
+      if (roomId == MyApp.chatController.roomId) {
+        Platform.runLater {
+          MyApp.chatController.showTyping(username)
+        }
+      }      
     case AddMessage(roomId, message) =>
       if (roomId == MyApp.chatController.roomId) {
         Platform.runLater {

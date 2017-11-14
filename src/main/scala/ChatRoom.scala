@@ -8,6 +8,7 @@ object ChatRoom {
 
   case class Join(user: User)
   case class Invite(user: User, actor: ActorRef)
+  case class ShowTyping(username: String)
   case class Message(from: String, value: String)
 }
 
@@ -43,6 +44,10 @@ class ChatRoom(
       actor ! Client.JoinChatRoom(user, roomId, messages)
     case Join(user) =>
       sender() ! Client.JoinChatRoom(user, roomId, messages)
+    case ShowTyping(username) =>
+      userSelections.foreach { actorSelection =>
+        actorSelection ! Client.ReceiveShowTyping(roomId, username)
+      }
     case msg @ Message(from, message) => 
       messages += msg
       log.info(s"Received $message from $from")

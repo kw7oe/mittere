@@ -15,6 +15,10 @@ object MyApp extends JFXApp {
   val config = setConfigWith(address)
   val system = ActorSystem("chat", config)
 
+  // To be used in scehduling stop showing typing
+  val scheduler = system.scheduler
+  implicit val executor = system.dispatcher
+
   // Initialize Actor
   val serverActor = system.actorOf(Props[Server], "server")
   val clientActor = system.actorOf(Props[Client], "client")
