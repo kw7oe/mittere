@@ -27,7 +27,7 @@
             <ListView fx:id="messageList" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label fx:id="username" text="Username" />
+                  <Label fx:id="usernameLabel" text="Username" />
                   <Label fx:id="typingLabel" alignment="CENTER" contentDisplay="CENTER">
                      <HBox.margin>
                         <Insets left="10.0" />

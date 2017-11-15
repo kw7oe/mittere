@@ -20,7 +20,7 @@ class ListCellController(
   def handleShowChat(action: MouseEvent) {
     import Client._
     if (action.button == MouseButton.Primary) {
-      MyApp.clientActor ! RequestToGetChatWith(user)
+      MyApp.clientActor ! RequestToChatWith(user)
     }
   }
 
