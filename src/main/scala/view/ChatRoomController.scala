@@ -44,6 +44,16 @@ class ChatRoomController(
     return Some(u.username)
   }
 
+  // Reinitialize the state of the chat room
+  def initialize(roomId: Option[String], 
+                 messages: ArrayBuffer[ChatRoom.Message],
+                 user: User) {
+    this.roomId = roomId
+    this.messages =  messages
+    this.user = user
+    this.showStatus("")
+  }
+
   def handleSend(messages: String) {
     import Client._
     roomId match {
@@ -69,7 +79,8 @@ class ChatRoomController(
     }
   }
 
-  def showTyping(username: String) {
+  def showStatus(value: String) {
+    typingLabel.text = value
     // typingLabel.text = s"$username is typing..."
     // val task = new Runnable { 
     //   def run() { 

@@ -27,6 +27,15 @@ class MainController(
     MyApp.clientActor ! RequestToJoin(server.text.value, port.text.value, username.text.value)
   }
 
+  def handleCreateChatRoom(action: ActionEvent) {
+    import Client._
+    val tempRoom = Room(null, null, null)
+    val okClicked = MyApp.showCreateChatRoomDialog(tempRoom)
+    if (okClicked) {
+      MyApp.clientActor ! RequestToCreateChatRoom(tempRoom)
+    }
+  }
+
   def clearJoin(): Unit = {
     borderPane.center = null
   }
@@ -38,6 +47,10 @@ class MainController(
 
   def showJoin(name: User): Unit = {
     userListItems += name
+  }
+
+  def removeJoin(name: User): Unit = {
+    userListItems -= name
   }
 
   def showChatRoom: Unit = {  

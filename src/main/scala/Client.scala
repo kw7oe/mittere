@@ -36,6 +36,10 @@ class Client extends Actor with ActorLogging {
   var chatRoomActors: Map[String, ActorRef] = new HashMap()
   var actorPathToChatRoomActors: Map[String, ActorRef] = new HashMap()
 
+  override def preStart(): Unit = {
+    context.system.eventStream.subscribe(self, classOf[akka.remote.DisassociatedEvent])
+  }
+
   def receive = {
     // Request to join server
     case RequestToJoin(serverAddress, portNumber, name) =>
@@ -53,6 +57,18 @@ class Client extends Actor with ActorLogging {
   }
 
   def joined: Receive = {
+    case akka.remote.DisassociatedEvent(local, remote, _) =>
+      val userInfo = usernameToClient.find { case(_, x) => 
+        x.path.address == remote
+      }
+
+      userInfo match {
+        case Some(value) => 
+          usernameToClient -= value._1
+          val user = User(value._1, value._2)
+          MyApp.displayActor ! Display.RemoveJoin(user)
+        case None => // Do Nothing
+      }
     // When new user connect to the same server
     case NewUser(name, ref) =>
       usernameToClient += (name -> ref)
