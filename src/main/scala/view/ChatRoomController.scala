@@ -1,5 +1,5 @@
 import scalafx.event.ActionEvent
-import scalafx.scene.input.KeyEvent
+import scalafx.scene.input.{KeyEvent, KeyCode}
 import scalafx.scene.control.{Label, Button, TextArea, ListView}
 import scalafx.scene.text.Text
 import scalafx.beans.property.StringProperty
@@ -14,7 +14,6 @@ import scalafxml.core.macros.sfxml
 class ChatRoomController(
   private val username: Label,
   private val typingLabel: Label,
-  private val sendButton: Button,
   private val textArea: TextArea,
   private val messageList: ListView[String]
 ) {
@@ -35,14 +34,23 @@ class ChatRoomController(
     username.text = _user.username
   }
 
-  def handleSend(action: ActionEvent) {
+  def handleSend(messages: String) {
     import Client._
-    MyApp.clientActor ! RequestToSendMessage(roomId, textArea.text.value)
+    MyApp.clientActor ! RequestToSendMessage(roomId, messages)
   }
 
   def handleTyped(action: KeyEvent) {
     import Client._
-    MyApp.clientActor ! Typing(roomId)
+    if(action.code == KeyCode.ENTER && action.shiftDown){
+      println("Shift + Enter")
+      textArea.text.value = textArea.text.value + "\n"
+    }else if (action.code == KeyCode.ENTER){
+      action.consume()
+      handleSend(textArea.text.value)
+      textArea.text.value = ""
+    } else {
+      MyApp.clientActor ! Typing(roomId)
+    }
   }
 
   def showTyping(username: String) {
