@@ -1,4 +1,5 @@
 import scalafx.event.ActionEvent
+import akka.actor.ActorRef
 import scalafxml.core.{FXMLLoader, NoDependencyResolver}
 import scalafx.Includes._
 import scalafx.scene.control.{Button, Label, TextField, ListView, ListCell}
@@ -30,7 +31,7 @@ class MainController(
     borderPane.center = null
   }
 
-  def showUserList(names: Map[String, String]): Unit = {
+  def showUserList(names: Map[String, ActorRef]): Unit = {
     val users = User(names)
     userListItems.appendAll(users)
   }

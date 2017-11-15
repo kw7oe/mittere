@@ -52,7 +52,7 @@ class ChatRoom(
       messages += msg
       log.info(s"Received $message from $from")
       userSelections.foreach { actorSelection => 
-        actorSelection ! Client.ReceiveMessage(roomId, msg)
+        actorSelection ! Client.ReceiveMessage(Group, roomId, msg)
       }
     case _ => log.info("Receive unknown message")
   }

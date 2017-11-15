@@ -1,12 +1,11 @@
 import akka.actor.{Actor, Props, ActorLogging, ActorRef, Terminated}
-import scalafx.collections.{ObservableHashMap, ObservableMap, ObservableSet, ObservableHashSet}
-import scala.collection.immutable.HashMap
+import scala.collection.immutable.{HashMap, HashSet}
+import scalafx.collections.{ObservableSet, ObservableHashSet}
 import java.util.UUID.randomUUID
 
 
 object Server {
   case class Join(username: String)
-  case class ReceivedJoined(username: String)
   case class CreateChatRoom(user: User)
   case class ChatRoomCreated()
 }
@@ -14,14 +13,8 @@ object Server {
 class Server extends Actor with ActorLogging {
   import Server._
 
-  // A collection of client username and actor path.
-  //
-  // E.g. 
-  //   { "akka.tcp://..." -> "username" }
-  var clientNamePairs: Map[String,String] = new HashMap()
-
-  // A collection of joined Client ActorRef
-  var clients: ObservableSet[ActorRef] = new ObservableHashSet() 
+  // A collection of client username and actor ref.
+  var usernameToClient: Map[String, ActorRef] = new HashMap()
 
   // A collection of created ChatRoom ActorRef and their 
   // roomId
@@ -35,33 +28,33 @@ class Server extends Actor with ActorLogging {
 
   override def receive = {
     case Join(name) =>
-      // Send all online users details to client
-      sender() ! Client.Joined(clientNamePairs)
-    case ReceivedJoined(name) =>
-      val senderPath = sender().path.toString
+      log.info(s"Join from $name")
 
-      // Notify other users new user has joined
-      clients.foreach { userActor =>
-        userActor ! Client.NewUser(senderPath, name)
+      // Multicast new user to all online users
+      usernameToClient.foreach { case (_, userActor) =>
+        userActor ! Client.NewUser(name, sender())
       }
 
-      // Keep track of the clients info
-      clientNamePairs += (senderPath -> name)
-      clients += sender()
-    case CreateChatRoom(user) =>
-      val senderPath = sender().path.toString
-      val roomId = generateUUID
+      // Update the collection
+      usernameToClient += (name -> sender())
 
-      val userPaths = Array(senderPath, user.actorPath)
-      val chatRoomActor = context.actorOf(
-        ChatRoom.props(roomId, userPaths), s"chatroom-$roomId")
+      // Send the online users info to the client
+      sender() ! Client.Joined(usernameToClient)
+    case CreateChatRoom(user) =>
+      log.info(s"CreateChatRoom: $user")
+      // val senderPath = sender().path.toString
+      // val roomId = generateUUID
+
+      // val userPaths = Array(senderPath, user.actorPath)
+      // val chatRoomActor = context.actorOf(
+      //   ChatRoom.props(roomId, userPaths), s"chatroom-$roomId")
       
-      context.watch(chatRoomActor)
-      chatRoomToUUID += (chatRoomActor -> roomId)
-      chatRoomActor ! ChatRoom.Invite(user, sender())
+      // context.watch(chatRoomActor)
+      // chatRoomToUUID += (chatRoomActor -> roomId)
+      // chatRoomActor ! ChatRoom.Invite(user, sender())
     case Terminated(actor) =>
       log.info(s"$actor has been terminated")
-      chatRoomToUUID -= actor
+      // chatRoomToUUID -= actor
     case _ => log.info("Unknown message received.")
   }
 

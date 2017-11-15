@@ -12,15 +12,18 @@ import scalafxml.core.macros.sfxml
 
 @sfxml
 class ChatRoomController(
-  private val username: Label,
+  private val usernameLabel: Label,
   private val typingLabel: Label,
   private val textArea: TextArea,
   private val messageList: ListView[String]
 ) {
 
   var messages: ObservableBuffer[String] = new ObservableBuffer[String]()
-  private var _user: User = null
-  var roomId: String = null
+  private var _user: Option[User] = None
+
+  // If roomId is None, it means that is a personal chat.
+  // If roomId has value, it is a group chat.
+  var roomId: Option[String] = None
   messageList.items = messages
 
   def messages_=(messages: ArrayBuffer[ChatRoom.Message]) {
@@ -30,13 +33,23 @@ class ChatRoomController(
 
   def user = _user
   def user_=(user: User) {
-    _user = user
-    username.text = _user.username
+    _user = Some(user)
+    usernameLabel.text = _user.get.username
+  }
+
+  def username: Option[String] = {
+    val u = _user.getOrElse {
+      return None
+    }
+    return Some(u.username)
   }
 
   def handleSend(messages: String) {
     import Client._
-    MyApp.clientActor ! RequestToSendMessage(roomId, messages)
+    roomId match {
+      case Some(id) =>  MyApp.clientActor ! RequestToSendMessage(Group, id, textArea.text.value)
+      case None => MyApp.clientActor ! RequestToSendMessage(Personal, user.get.username, textArea.text.value)
+    }
   }
 
   def handleTyped(action: KeyEvent) {
@@ -49,20 +62,23 @@ class ChatRoomController(
       handleSend(textArea.text.value)
       textArea.text.value = ""
     } else {
-      MyApp.clientActor ! Typing(roomId)
+      // roomId match {
+      //   case Some(id) =>  MyApp.clientActor ! Typing(Group, roomId.get)
+      //   case None => MyApp.clientActor ! Typing(Personal, user.username)
+      // }
     }
   }
 
   def showTyping(username: String) {
-    typingLabel.text = s"$username is typing..."
-    val task = new Runnable { 
-      def run() { 
-        Platform.runLater {
-          typingLabel.text = ""
-        }
-      } 
-    }
-    MyApp.scheduler.scheduleOnce(2 second, task)
+    // typingLabel.text = s"$username is typing..."
+    // val task = new Runnable { 
+    //   def run() { 
+    //     Platform.runLater {
+    //       typingLabel.text = ""
+    //     }
+    //   } 
+    // }
+    // MyApp.scheduler.scheduleOnce(2 second, task)
   }
 
   def addMessage(message: ChatRoom.Message) {
