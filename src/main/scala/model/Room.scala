@@ -8,6 +8,8 @@ case object Group extends ChatRoomType
 trait Chattable {
   def key: String
   def chattableType: ChatRoomType
+
+  def key_=(key: String)
 }
 
 case class Room(
@@ -16,6 +18,10 @@ case class Room(
   var users: List[ActorRef]) extends Chattable {
 
   def key = name
+  def key_=(key: String) {
+    name = key
+  }
+  
   def chattableType = Group
 }
 

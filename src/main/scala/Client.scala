@@ -20,7 +20,7 @@ object Client {
   case class Typing(roomType: ChatRoomType, key: String)
   case class ReceiveShowTyping(roomId: String, username: String)
   case class RequestToSendMessage(chattable: Chattable, msg: String)
-  case class ReceiveMessage(chattable: Chattable, message: Room.Message)
+  case class ReceiveMessage(chattable: Chattable, key: String, message: Room.Message)
 }
 
 class Client extends Actor with ActorLogging {
@@ -139,27 +139,32 @@ class Client extends Actor with ActorLogging {
           val room = roomNameToRoom.get(chattable.key).get
           room.users.foreach { actor =>
             val message = new Room.Message(username.get, msg)
-            actor ! ReceiveMessage(chattable, message)
+            val key = chattable.key
+            actor ! ReceiveMessage(chattable, key, message)
           }
         case Personal =>
           val actor = usernameToClient.get(chattable.key)
           val message = new Room.Message(username.get, msg)
-          actor.get ! ReceiveMessage(chattable, message)
+          val key = username.get
+          actor.get ! ReceiveMessage(chattable, key, message)
+          if (key != chattable.key) {
+            self ! ReceiveMessage(chattable, chattable.key, message)
+          }
       }
-    case ReceiveMessage(chattable, msg) =>
+    case ReceiveMessage(chattable, key, msg) =>
       log.info(s"ReceiveMessage: $chattable, $msg")
 
       chattable.chattableType match {
         case Group =>
           // Extremely DANGER
-          roomNameToRoom.get(chattable.key).get.messages += msg
+          roomNameToRoom.get(key).get.messages += msg
         case Personal =>
-          if (!usernameToMessages.contains(chattable.key)) {
-            usernameToMessages += (chattable.key -> new ArrayBuffer[Room.Message]())
+          if (!usernameToMessages.contains(key)) {
+            usernameToMessages += (key -> new ArrayBuffer[Room.Message]())
           }
-          usernameToMessages.get(chattable.key).get += msg
+          usernameToMessages.get(key).get += msg
       }
-      MyApp.displayActor ! Display.AddMessage(chattable, msg)
+      MyApp.displayActor ! Display.AddMessage(chattable, key, msg)
     case _ => log.info("Received unknown message")
   }
 

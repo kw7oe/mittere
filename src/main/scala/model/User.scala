@@ -1,8 +1,12 @@
 import akka.actor.ActorRef
 
-case class User(val username: String, 
+case class User(var username: String, 
                 val actorRef: ActorRef) extends Chattable {
   def key = username
+  def key_=(key: String) {
+    username = key
+  }
+
   def chattableType = Personal
 }
 

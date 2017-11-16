@@ -18,7 +18,8 @@ object Display {
 
   // Chatting related
   case class ShowTyping(roomId: String, username: String)
-  case class AddMessage(chattable: Chattable, 
+  case class AddMessage(chattable: Chattable,
+                        key: String, 
                         message: Room.Message)
 }
 
@@ -58,9 +59,13 @@ class Display extends Actor with ActorLogging {
       //     MyApp.chatController.showStatus(username)
       //   }
       // }      
-    case AddMessage(chattable, message) =>
+    case AddMessage(chattable, key, message) =>
       Platform.runLater {
-        if (Some(chattable) == MyApp.chatController.chattable) {
+        log.info(s"${Some(chattable)}")
+        log.info(s"${MyApp.chatController.chattable}")
+        if (key == MyApp.chatController.chattable.get.key &&
+            chattable.chattableType == MyApp.chatController.chattable.get.chattableType
+        ) {
           MyApp.chatController.addMessage(message)
         }
       }     
