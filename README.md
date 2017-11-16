@@ -35,7 +35,7 @@ All the tasks below are subject to change.
 ### Error Handling
 - [X] Interface Binding should not crash while user do not enter integer.
 - [ ] **Handle when incorrect port and localhost inserted.** 
-- [ ] **Check if username is unique.**
+- [X] **Check if username is unique.**
 - [ ] **Check if group name is unique.**
 - [X] Remove user from online when disconnected.
 

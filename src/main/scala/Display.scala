@@ -6,6 +6,9 @@ object Display {
   // Initialization
   case class Initialize(names: Map[String,ActorRef],
                         rooms: Map[String,Room])
+  case class ShowAlert(title: String,
+                       headerText: String,
+                       contentText: String)
 
   // User related
   case class ShowJoin(user: User)
@@ -33,6 +36,16 @@ class Display extends Actor with ActorLogging {
         MyApp.mainController.initialize(users, rooms)
         MyApp.mainController.clearJoin()
       }
+
+    case ShowAlert(title, headerText, contentText) => {
+      Platform.runLater {
+        MyApp.showAlert(
+          title,
+          headerText,
+          contentText
+        )
+      }
+    }
     case ShowJoin(user) =>
       Platform.runLater {
         MyApp.mainController.showJoin(user)
