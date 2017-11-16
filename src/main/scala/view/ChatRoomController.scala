@@ -55,8 +55,7 @@ class ChatRoomController(
   def handleTyped(action: KeyEvent) {
     import Client._
     if(action.code == KeyCode.ENTER && action.shiftDown){
-      println("Shift + Enter")
-      textArea.text.value = textArea.text.value + "\n"
+      textArea.appendText("\n")
     }else if (action.code == KeyCode.ENTER){
       action.consume()
       handleSend(textArea.text.value)
