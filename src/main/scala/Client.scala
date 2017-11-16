@@ -4,13 +4,19 @@ import scala.collection.immutable.HashMap
 
 object Client {
   // Before Join
-  case class RequestToJoin(serverAddress: String, portNumber: String, username: String)
-  case class Joined(clients: Map[String, ActorRef])
+  case class RequestToJoin(serverAddress: String, 
+                           portNumber: String, 
+                           username: String)
+  case class Joined(clients: Map[String, ActorRef], 
+                    rooms:  Map[String, Room])
 
   // Joined
   case class NewUser(name: String, actorRef: ActorRef)
   case class RequestToChatWith(user: User)
   case class RequestToCreateChatRoom(chatRoom: Room)
+  case class NewChatRoom(room: Room)
+
+  // DEPRECATED
   case class ChatRoomCreated(userPath: String, roomId: String)
   case class JoinChatRoom(user: User, roomId: String, messages: ArrayBuffer[ChatRoom.Message])
 
@@ -31,7 +37,11 @@ class Client extends Actor with ActorLogging {
   // { "username" -> ActorRef }
   var usernameToClient: Map[String,ActorRef] = new HashMap()
   // The message history with other user
+  // { "username" -> [Mesage, Message] }
   var usernameToMessages: Map[String, ArrayBuffer[ChatRoom.Message]] = new HashMap()
+  // The info of chatRoom
+  // { "roomName" -> Room }
+  var roomNameToRoom: Map[String, Room] = new HashMap()
 
   var chatRoomActors: Map[String, ActorRef] = new HashMap()
   var actorPathToChatRoomActors: Map[String, ActorRef] = new HashMap()
@@ -48,10 +58,11 @@ class Client extends Actor with ActorLogging {
       username = Some(name)
       serverActor.get ! Server.Join(username.get)
     // Get online users from server
-    case Joined(users)  =>
+    case Joined(users, rooms)  =>
       log.info("Joined")
       usernameToClient = users
-      MyApp.displayActor ! Display.ShowUserList(usernameToClient)
+      roomNameToRoom = rooms
+      MyApp.displayActor ! Display.Initialize(usernameToClient, roomNameToRoom)
       context.become(joined)
     case _ => log.info("Received unknown message")
   }
@@ -82,17 +93,29 @@ class Client extends Actor with ActorLogging {
       }
       val messages = usernameToMessages.get(user.username)
       MyApp.displayActor ! Display.ShowChatRoom(user, None, messages.get)
-    case RequestToCreateChatRoom(room) =>
-      log.info(s"RequestToCreateChatRoom: $room")
-      // // Check if ChatRoom already existed
-      // val actorSelection = actorPathToChatRoomActors.get(user.actorPath)
+    // Create a chat room and broadcast to other user
+    case RequestToCreateChatRoom(tempRoom) =>
+      log.info(s"RequestToCreateChatRoom: $tempRoom")
 
-      // actorSelection match {
-      //   // Join if exist
-      //   case Some(value) => value ! ChatRoom.Join(user)
-      //   // Request server to create a chat room
-      //   case None => serverActor.get ! Server.CreateChatRoom(user)
-      // }
+      // Initialize Room and add into roomNameToRoom
+      if (!roomNameToRoom.contains(tempRoom.name)) {
+        tempRoom.users = List(self)
+        roomNameToRoom += (tempRoom.name -> tempRoom)
+      }
+
+      val room = roomNameToRoom.get(tempRoom.name)
+
+      // Inform the host
+      serverActor.get ! Server.ChatRoomCreated(room.get)
+
+      // Broadcast the created room to other users
+      usernameToClient.foreach { case (_, userActor) =>
+        userActor ! Client.NewChatRoom(room.get)
+      }
+    case NewChatRoom(room) =>
+      log.info(s"NewChatRoom: $room")
+      roomNameToRoom += (room.name -> room)
+      MyApp.displayActor ! Display.ShowNewChatRoom(room)
     // Get notified when chat room is created
     case ChatRoomCreated(userPath, roomId) =>
       log.info(s"ChatRoomCreated with $roomId")

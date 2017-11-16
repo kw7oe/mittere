@@ -26,14 +26,18 @@ All the tasks below are subject to change.
 - [X] Able to send and receive message to/from other user.
 - [X] Able to see user is typing.
 - [X] Able to see user is online.
-- [ ] Able to create a chat room for multiple user.
+- [X] Able to create a chat room for multiple user.
+- [ ] Able to join chat room, send and receive from/to the chat room.
+- [ ] Able to receive notification when someone receive message.
 - [ ] Able to kick user out of chat room.
 - [ ] Able to delete chat room.
 
 ### Error Handling
 - [X] Interface Binding should not crash while user do not enter integer.
 - [ ] Handle when incorrect port and localhost inserted.
-- [ ] Remove user from online when disconnected.
+- [ ] Check if username is unique.
+- [ ] Check if group name is unique.
+- [X] Remove user from online when disconnected.
 
 
 

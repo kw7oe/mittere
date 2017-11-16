@@ -3,10 +3,19 @@ import scala.collection.mutable.ArrayBuffer
 import scalafx.application.Platform
 
 object Display {
+  // Initialization
+  case class Initialize(names: Map[String,ActorRef],
+                        rooms: Map[String,Room])
+
+  // User related
   case class ShowJoin(user: User)
   case class RemoveJoin(user: User)
-  case class ShowUserList(names: Map[String,ActorRef])
+
+  // Chat Room related
+  case class ShowNewChatRoom(room: Room)
   case class ShowChatRoom(user: User, roomId: Option[String], messages: ArrayBuffer[ChatRoom.Message])
+
+  // Chatting related
   case class ShowTyping(roomId: String, username: String)
   case class AddMessage(roomType: ChatRoomType, key: String, message: ChatRoom.Message)
 }
@@ -16,6 +25,11 @@ class Display extends Actor with ActorLogging {
   import Client._
 
   def receive: Receive = {
+    case Initialize(users, rooms) =>
+      Platform.runLater {
+        MyApp.mainController.initialize(users, rooms)
+        MyApp.mainController.clearJoin()
+      }
     case ShowJoin(user) =>
       Platform.runLater {
         MyApp.mainController.showJoin(user)
@@ -27,10 +41,9 @@ class Display extends Actor with ActorLogging {
           MyApp.chatController.showStatus("is offline")
         }
       }      
-    case ShowUserList(users) =>
+    case ShowNewChatRoom(room) =>
       Platform.runLater {
-        MyApp.mainController.showUserList(users)
-        MyApp.mainController.clearJoin()
+        MyApp.mainController.showNewChatRoom(room)
       }
     case ShowChatRoom(user, roomId, messages) =>
       Platform.runLater {
