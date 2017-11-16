@@ -47,18 +47,14 @@ class ChatRoomController(
         MyApp.clientActor ! RequestToSendMessage(c, textArea.text.value)
       case None => // Do Nothing
     }
-    // roomId match {
-    //   case Some(id) =>  MyApp.clientActor ! RequestToSendMessage(Group, id, textArea.text.value)
-    //   case None => MyApp.clientActor ! RequestToSendMessage(Personal, user.get.username, textArea.text.value)
-    // }
   }
 
   def handleTyped(action: KeyEvent) {
     import Client._
-    if(action.code == KeyCode.ENTER && action.shiftDown){
+    if (action.code == KeyCode.ENTER && action.shiftDown){
       println("Shift + Enter")
       textArea.text.value = textArea.text.value + "\n"
-    }else if (action.code == KeyCode.ENTER){
+    } else if (action.code == KeyCode.ENTER){
       action.consume()
       handleSend(textArea.text.value)
       textArea.text.value = ""

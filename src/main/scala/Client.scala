@@ -13,7 +13,8 @@ object Client {
   // Joined
   case class NewUser(name: String, actorRef: ActorRef)
   case class RequestToChatWith(chattable: Chattable)
-  case class RequestToCreateChatRoom(chatRoom: Room)
+  case class RequestToCreateChatRoom(room: Room)
+  case class JoinChatRoom(key: String)
   case class NewChatRoom(room: Room)
 
   // Chatting
@@ -44,13 +45,11 @@ class Client extends Actor with ActorLogging {
   }
 
   def receive = {
-    // Request to join server
     case RequestToJoin(serverAddress, portNumber, name) =>
       log.info("RequestToJoin")
       serverActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/server"))
       username = Some(name)
       serverActor.get ! Server.Join(username.get)
-    // Get online users from server
     case Joined(users, rooms)  =>
       log.info("Joined")
       usernameToClient = users
@@ -73,12 +72,10 @@ class Client extends Actor with ActorLogging {
           MyApp.displayActor ! Display.RemoveJoin(user)
         case None => // Do Nothing
       }
-    // When new user connect to the same server
     case NewUser(name, ref) =>
       usernameToClient += (name -> ref)
       val user = User(name, ref)
       MyApp.displayActor ! Display.ShowJoin(user)
-    // When user click the username on the user lists
     case RequestToChatWith(chattable) =>
       log.info(s"RequestToChatWith: $chattable")
 
@@ -90,12 +87,21 @@ class Client extends Actor with ActorLogging {
           val messages = usernameToMessages.get(chattable.key)
           MyApp.displayActor ! Display.ShowChatRoom(chattable, messages.get)
         case Group =>
-          // WARNING
-          val room = roomNameToRoom.get(chattable.key).get
-          MyApp.displayActor ! Display.ShowChatRoom(chattable, room.messages)
-      }
+          val room = roomNameToRoom.get(chattable.key)
+          room match {
+            case Some(r) => 
+              if (!r.users.contains(self)) {
+                // Broadcast to other users
+                serverActor.get ! Server.UpdateRoom(chattable.key)
+                usernameToClient.foreach { case (_, userActor) =>
+                  userActor ! Client.JoinChatRoom(chattable.key)
+                }
+              }
+              MyApp.displayActor ! Display.ShowChatRoom(chattable, r.messages)
 
-    // Create a chat room and broadcast to other user
+            case None => // Do Nothing
+          } 
+      }
     case RequestToCreateChatRoom(tempRoom) =>
       log.info(s"RequestToCreateChatRoom: $tempRoom")
 
@@ -114,6 +120,14 @@ class Client extends Actor with ActorLogging {
       usernameToClient.foreach { case (_, userActor) =>
         userActor ! Client.NewChatRoom(room.get)
       }
+    case JoinChatRoom(key) =>
+      log.info(s"JoinChatRoom: $key")
+      val room = roomNameToRoom.get(key)
+      room match {
+        case Some(r) =>
+          r.users = sender() :: r.users 
+        case None => // Do Nothing
+      }
     case NewChatRoom(room) =>
       log.info(s"NewChatRoom: $room")
       roomNameToRoom += (room.name -> room)
@@ -130,13 +144,12 @@ class Client extends Actor with ActorLogging {
       // if (username != this.username.get) {
       //   MyApp.displayActor ! Display.ShowTyping(roomId, username)
       // }
-    // Request to send message
     case RequestToSendMessage(chattable, msg) =>
       log.info(s"RequestToSendMessage: $chattable, $msg")
-
       chattable.chattableType match {
         case Group =>
           val room = roomNameToRoom.get(chattable.key).get
+          log.info(s"${room.users}")
           room.users.foreach { actor =>
             val message = new Room.Message(username.get, msg)
             val key = chattable.key

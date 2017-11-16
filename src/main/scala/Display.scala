@@ -61,15 +61,18 @@ class Display extends Actor with ActorLogging {
       // }      
     case AddMessage(chattable, key, message) =>
       Platform.runLater {
-        log.info(s"${Some(chattable)}")
-        log.info(s"${MyApp.chatController.chattable}")
-        if (key == MyApp.chatController.chattable.get.key &&
-            chattable.chattableType == MyApp.chatController.chattable.get.chattableType
-        ) {
+        if (shouldDisplayMessage(chattable, key)) {
           MyApp.chatController.addMessage(message)
+        } else {
+          log.info("Cannot add message")
         }
       }     
-      
     case _ => log.info("Receive unknown message")
+  }
+
+  def shouldDisplayMessage(chattable: Chattable, key: String): Boolean = {
+    return !MyApp.chatController.chattable.isEmpty && 
+           key == MyApp.chatController.chattable.get.key &&
+           chattable.chattableType == MyApp.chatController.chattable.get.chattableType
   }
 }

@@ -8,6 +8,7 @@ object Server {
   case class Join(username: String)
   case class CreateChatRoom(user: User)
   case class ChatRoomCreated(room: Room)
+  case class UpdateRoom(key: String)
 }
 
 class Server extends Actor with ActorLogging {
@@ -24,19 +25,23 @@ class Server extends Actor with ActorLogging {
     case Join(name) =>
       log.info(s"Join from $name")
 
-      // Multicast new user to all online users
       usernameToClient.foreach { case (_, userActor) =>
         userActor ! Client.NewUser(name, sender())
       }
 
-      // Update the collection
       usernameToClient += (name -> sender())
-
-      // Send the online users info to the client
       sender() ! Client.Joined(usernameToClient, roomNameToRoom)
     case ChatRoomCreated(room) =>
+      log.info(s"ChatRoomCreated: $room")
       roomNameToRoom += (room.name -> room) 
-      // chatRoomToUUID -= actor
+    case UpdateRoom(key) =>
+      log.info(s"UpdateRoom: $key")
+      val room = roomNameToRoom.get(key)
+      room match {
+        case Some(r) =>
+          r.users = sender() :: r.users 
+        case None => // Do Nothing
+      }
     case _ => log.info("Unknown message received.")
   }
 
