@@ -28,7 +28,7 @@ class ListCellController(
   }
 
   def handleShowUnread(){
-    unreadNumber.text = unreadNumber.text.toInt + 1
+    unreadNumber.text = unreadNumber.text.value + 1
     unreadNumber.opacity = 1
   }
 

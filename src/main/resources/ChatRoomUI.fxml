@@ -33,7 +33,7 @@
                </GridPane.margin>
             </HBox>
             <ListView fx:id="messageList" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
-            <TextArea fx:id="textArea" onKeyPressed="#handleTyped" prefHeight="43.0" prefWidth="570.0" promptText="Enter your message..." GridPane.rowIndex="2" />
+            <TextArea fx:id="textArea" onMouseClicked="#handleFocus" onKeyPressed="#handleTyped" prefHeight="43.0" prefWidth="570.0" promptText="Enter your message..." GridPane.rowIndex="2" />
          </children>
          <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />

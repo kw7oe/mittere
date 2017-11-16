@@ -83,6 +83,10 @@ class ChatRoomController(
     messages += convertMessageToString(message)
   } 
 
+  def handleFocus(){
+    //when focused remove unread
+  }
+
   private def convertMessageToString(message: Room.Message): String = {
     return s"${message.from}: ${message.value}"
   }

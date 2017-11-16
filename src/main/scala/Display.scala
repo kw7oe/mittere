@@ -63,6 +63,7 @@ class Display extends Actor with ActorLogging {
       Platform.runLater {
         if (shouldDisplayMessage(chattable, key)) {
           MyApp.chatController.addMessage(message)
+          MyApp.mainController.showUnread(key)
         } else {
           log.info("Cannot add message")
         }
