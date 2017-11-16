@@ -5,10 +5,11 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#handleShowChat" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
    <children>
-      <Label fx:id="label" layoutX="19.0" layoutY="5.0" prefHeight="17.0" prefWidth="189.0" text="Label">
+      <Label fx:id="label" layoutX="19.0" layoutY="5.0" prefHeight="17.0" prefWidth="125.0" text="Label">
          <contextMenu>
             <ContextMenu>
               <items>
@@ -17,5 +18,13 @@
             </ContextMenu>
          </contextMenu></Label>
       <Circle fill="#1fff25" layoutX="8.0" layoutY="13.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+      <Label fx:id="unreadNumber" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="1.0" layoutX="133.0" layoutY="5.0" opacity="0.0" prefHeight="14.0" prefWidth="14.0" text="0" textAlignment="CENTER">
+         <font>
+            <Font size="8.0" />
+         </font>
+         <graphic>
+            <Circle fill="#e8b29c" radius="7.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+         </graphic>
+      </Label>
    </children>
 </AnchorPane>

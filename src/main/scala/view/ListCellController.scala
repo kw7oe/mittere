@@ -7,7 +7,8 @@ import scalafxml.core.macros.sfxml
 @sfxml
 class ListCellController(
   private val label: Label,
-  private val kickMenuItem: MenuItem
+  private val kickMenuItem: MenuItem,
+  private val unreadNumber: Label
 ) {
 
   private var _chattable: Option[Chattable] = None
@@ -23,6 +24,16 @@ class ListCellController(
     if (action.button == MouseButton.Primary) {
       MyApp.clientActor ! RequestToChatWith(chattable.get)
     }
+    hideUnread()
+  }
+
+  def handleShowUnread(){
+    unreadNumber.text = unreadNumber.text.toInt + 1
+    unreadNumber.opacity = 1
+  }
+
+  def hideUnread(){
+    unreadNumber.opacity = 0
   }
 
   def kick(action: ActionEvent) {
