@@ -1,6 +1,6 @@
 import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef}
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.immutable.HashMap
+import scala.collection.immutable.{HashMap, HashSet}
 
 object Client {
   // Before Join
@@ -107,7 +107,7 @@ class Client extends Actor with ActorLogging {
 
       // Initialize Room and add into roomNameToRoom
       if (!roomNameToRoom.contains(tempRoom.name)) {
-        tempRoom.users = List(self)
+        tempRoom.users = HashSet(self)
         roomNameToRoom += (tempRoom.name -> tempRoom)
       }
 
@@ -125,7 +125,7 @@ class Client extends Actor with ActorLogging {
       val room = roomNameToRoom.get(key)
       room match {
         case Some(r) =>
-          r.users = sender() :: r.users 
+          r.users += sender() 
         case None => // Do Nothing
       }
     case NewChatRoom(room) =>

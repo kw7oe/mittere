@@ -134,7 +134,7 @@ object MyApp extends JFXApp {
       } catch {
         case e: Exception => println("Please select using number")
       }
-    } while (selection <= 0 || selection > max)
+    } while (selection < 0 || selection > max)
 
     return addresses(selection).getHostAddress
   }

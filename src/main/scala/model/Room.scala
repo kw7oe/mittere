@@ -15,7 +15,7 @@ trait Chattable {
 case class Room(
   var name: String, 
   val messages: ArrayBuffer[Room.Message],
-  var users: List[ActorRef]) extends Chattable {
+  var users: Set[ActorRef]) extends Chattable {
 
   def key = name
   def key_=(key: String) {

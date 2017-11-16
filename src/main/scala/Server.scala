@@ -39,7 +39,7 @@ class Server extends Actor with ActorLogging {
       val room = roomNameToRoom.get(key)
       room match {
         case Some(r) =>
-          r.users = sender() :: r.users 
+          r.users += sender() 
         case None => // Do Nothing
       }
     case _ => log.info("Unknown message received.")
