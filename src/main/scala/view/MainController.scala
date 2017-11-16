@@ -81,6 +81,15 @@ class MainController(
     borderPane.center = MyApp.chatRoomUI
   }
 
+  def showUnread(from: String){
+    //tell list cell to show unread
+    for(userCell <- userList.items){
+      if(userCell.label == from){
+        userCell.handleShowUnread()
+      }
+    }
+  }
+
   // Customize the ListCell in the List View
   private def setupUserListCell() {
     userList.cellFactory = { _ => 
