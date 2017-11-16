@@ -4,6 +4,7 @@ import scala.collection.immutable.{HashMap, HashSet}
 
 object Client {
   // Before Join
+  case object InvalidUsername
   case class RequestToJoin(serverAddress: String,
                            portNumber: String,
                            username: String)
@@ -50,6 +51,11 @@ class Client extends Actor with ActorLogging {
       serverActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/server"))
       username = Some(name)
       serverActor.get ! Server.Join(username.get)
+    case InvalidUsername =>
+      MyApp.displayActor ! Display.ShowAlert(
+        "Invalid Username", 
+        "Username has already been taken.", 
+        "Please enter a different username")
     case Joined(users, rooms)  =>
       log.info("Joined")
       usernameToClient = users
