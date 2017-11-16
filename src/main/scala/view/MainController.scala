@@ -87,7 +87,7 @@ class MainController(
             val root = loader.getRoot[javafx.scene.layout.AnchorPane]
             val controller = loader.getController[ListCellController#Controller]
 
-            controller.user = user.value
+            controller.chattable = user.value
             graphic = root
           }
         }}
@@ -108,7 +108,7 @@ class MainController(
             val root = loader.getRoot[javafx.scene.layout.AnchorPane]
             val controller = loader.getController[ListCellController#Controller]
 
-            controller.room = room.value
+            controller.chattable = room.value
             graphic = root
           }
         }}

@@ -9,25 +9,19 @@ class ListCellController(
   private val label: Label,
   private val kickMenuItem: MenuItem
 ) {
-  private var _user: User = null
-  private var _room: Room = null
 
-  def user = _user
-  def user_=(user: User) {
-    _user = user
-    label.text = user.username
-  }
+  private var _chattable: Option[Chattable] = None
 
-  def room = _room
-  def room_=(room: Room) {
-    _room = room
-    label.text = room.name
+  def chattable = _chattable
+  def chattable_=(chattable: Chattable) {
+    _chattable = Some(chattable)
+    label.text = chattable.key
   }
 
   def handleShowChat(action: MouseEvent) {
     import Client._
     if (action.button == MouseButton.Primary) {
-      MyApp.clientActor ! RequestToChatWith(user)
+      MyApp.clientActor ! RequestToChatWith(chattable.get)
     }
   }
 

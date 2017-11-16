@@ -17,13 +17,6 @@ class Server extends Actor with ActorLogging {
   var usernameToClient: Map[String, ActorRef] = new HashMap()
   var roomNameToRoom: Map[String, Room] = new HashMap()
 
-  // A collection of created ChatRoom ActorRef and their 
-  // roomId
-  //
-  // E.g 
-  //   { "actorRef" -> 'random_uuid' }
-  // var chatRoomToUUID: Map[ActorRef, String] = new HashMap()
-
   override def preStart() = log.info("Server started")
   override def postStop() = log.info("Server stopped")
 
@@ -43,29 +36,8 @@ class Server extends Actor with ActorLogging {
       sender() ! Client.Joined(usernameToClient, roomNameToRoom)
     case ChatRoomCreated(room) =>
       roomNameToRoom += (room.name -> room) 
-    case CreateChatRoom(user) =>
-      log.info(s"CreateChatRoom: $user")
-      // val senderPath = sender().path.toString
-      // val roomId = generateUUID
-
-      // val userPaths = Array(senderPath, user.actorPath)
-      // val chatRoomActor = context.actorOf(
-      //   ChatRoom.props(roomId, userPaths), s"chatroom-$roomId")
-      
-      // context.watch(chatRoomActor)
-      // chatRoomToUUID += (chatRoomActor -> roomId)
-      // chatRoomActor ! ChatRoom.Invite(user, sender())
-    case Terminated(actor) =>
-      log.info(s"$actor has been terminated")
       // chatRoomToUUID -= actor
     case _ => log.info("Unknown message received.")
   }
-
-  // Generate unique id for each ChatRoom Actor
-  // private def generateUUID: String = {   
-  //   return randomUUID.toString
-  // }
-
-
 
 }

@@ -13,11 +13,13 @@ object Display {
 
   // Chat Room related
   case class ShowNewChatRoom(room: Room)
-  case class ShowChatRoom(user: User, roomId: Option[String], messages: ArrayBuffer[ChatRoom.Message])
+  case class ShowChatRoom(chattable: Chattable, 
+                          messages: ArrayBuffer[Room.Message])
 
   // Chatting related
   case class ShowTyping(roomId: String, username: String)
-  case class AddMessage(roomType: ChatRoomType, key: String, message: ChatRoom.Message)
+  case class AddMessage(chattable: Chattable, 
+                        message: Room.Message)
 }
 
 class Display extends Actor with ActorLogging {
@@ -37,38 +39,29 @@ class Display extends Actor with ActorLogging {
     case RemoveJoin(user) =>
       Platform.runLater {
         MyApp.mainController.removeJoin(user)
-        if (Some(user) == MyApp.chatController.user) {
-          MyApp.chatController.showStatus("is offline")
-        }
+        // if (Some(user) == MyApp.chatController.user) {
+        //   MyApp.chatController.showStatus("is offline")
+        // }
       }      
     case ShowNewChatRoom(room) =>
       Platform.runLater {
         MyApp.mainController.showNewChatRoom(room)
       }
-    case ShowChatRoom(user, roomId, messages) =>
+    case ShowChatRoom(chattable, messages) =>
       Platform.runLater {
-        MyApp.chatController.initialize(roomId, messages, user)
+        MyApp.chatController.initialize(chattable, messages)
         MyApp.mainController.showChatRoom
       }
     case ShowTyping(roomId, username) =>
-      if (roomId == MyApp.chatController.roomId) {
-        Platform.runLater {
-          MyApp.chatController.showStatus(username)
-        }
-      }      
-    case AddMessage(roomType, key, message) =>
+      // if (roomId == MyApp.chatController.roomId) {
+      //   Platform.runLater {
+      //     MyApp.chatController.showStatus(username)
+      //   }
+      // }      
+    case AddMessage(chattable, message) =>
       Platform.runLater {
-        roomType match {
-          case Group =>
-            log.info("AddMessage Group")
-            if (key == MyApp.chatController.roomId) {
-              MyApp.chatController.addMessage(message)
-            }
-          case Personal =>
-            log.info("AddMesage Personal")
-            if (Some(key) == MyApp.chatController.username) {
-              MyApp.chatController.addMessage(message)
-            }
+        if (Some(chattable) == MyApp.chatController.chattable) {
+          MyApp.chatController.addMessage(message)
         }
       }     
       
