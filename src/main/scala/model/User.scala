@@ -6,7 +6,11 @@ case class User(var username: String,
   def key_=(key: String) {
     username = key
   }
-
+  private var _unreadNumber = 0
+  def unreadNumber = _unreadNumber
+  def unreadNumber_=(number: Int) {
+    _unreadNumber = number
+  }
   def chattableType = Personal
 }
 

@@ -21,7 +21,11 @@ case class Room(
   def key_=(key: String) {
     name = key
   }
-  
+  private var _unreadNumber = 0
+  def unreadNumber = _unreadNumber
+  def unreadNumber_=(number: Int) {
+    _unreadNumber = number
+  }
   def chattableType = Group
 }
 

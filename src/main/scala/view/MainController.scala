@@ -83,13 +83,34 @@ class MainController(
 
   def showUnread(from: String){
     //tell list cell to show unread
-    for(userCell <- userList.items){
-      if(userCell.label == from){
-        userCell.handleShowUnread()
+    println("Showing unread")
+    for(userCell <- userListItems.toArray){
+      if(userCell.username == from){
+        userCell.unreadNumber += 1
+        setupUserListCell()
+      }
+    }
+    for(chatRoom <- chatRoomListItems.toArray){
+      if(chatRoom.name == from){
+        chatRoom.unreadNumber += 1
+        setupRoomListCell()
       }
     }
   }
-
+  def hideUnread(from: String){
+    for(userCell <- userListItems.toArray){
+      if(userCell.username == from){
+        userCell.unreadNumber = 0
+        setupUserListCell()
+      }
+    }
+    for(chatRoom <- chatRoomListItems.toArray){
+      if(chatRoom.name == from){
+        chatRoom.unreadNumber = 0
+        setupRoomListCell()
+      }
+    }
+  }
   // Customize the ListCell in the List View
   private def setupUserListCell() {
     userList.cellFactory = { _ => 
@@ -105,6 +126,7 @@ class MainController(
             val controller = loader.getController[ListCellController#Controller]
 
             controller.chattable = user.value
+            controller.unread = user.value.unreadNumber
             graphic = root
           }
         }}
@@ -126,6 +148,7 @@ class MainController(
             val controller = loader.getController[ListCellController#Controller]
 
             controller.chattable = room.value
+            controller.unread = room.value.unreadNumber
             graphic = root
           }
         }}

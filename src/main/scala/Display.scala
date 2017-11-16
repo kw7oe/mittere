@@ -65,6 +65,7 @@ class Display extends Actor with ActorLogging {
       Platform.runLater {
         MyApp.chatController.initialize(chattable, messages)
         MyApp.mainController.showChatRoom
+        MyApp.mainController.hideUnread(chattable.key)
       }
     case ShowTyping(roomId, username) =>
       // if (roomId == MyApp.chatController.roomId) {
@@ -76,7 +77,6 @@ class Display extends Actor with ActorLogging {
       Platform.runLater {
         if (shouldDisplayMessage(chattable, key)) {
           MyApp.chatController.addMessage(message)
-          MyApp.mainController.showUnread(key)
         } else {
           log.info("Cannot add message")
         }
