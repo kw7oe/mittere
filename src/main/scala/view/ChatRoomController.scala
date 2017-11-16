@@ -19,37 +19,38 @@ class ChatRoomController(
 ) {
 
   var messages: ObservableBuffer[String] = new ObservableBuffer[String]()
-  private var _user: Option[User] = None
-
-  // If roomId is None, it means that is a personal chat.
-  // If roomId has value, it is a group chat.
-  var roomId: Option[String] = None
+  private var _chattable: Option[Chattable] = None
   messageList.items = messages
 
-  def messages_=(messages: ArrayBuffer[ChatRoom.Message]) {
+  def messages_=(messages: ArrayBuffer[Room.Message]) {
     this.messages = ObservableBuffer(messages.map { m => convertMessageToString(m) })
     messageList.items = this.messages
   }
 
-  def user = _user
-  def user_=(user: User) {
-    _user = Some(user)
-    usernameLabel.text = _user.get.username
+  def chattable = _chattable
+  def chattable_=(chattable: Chattable) {
+    _chattable = Some(chattable)
+    usernameLabel.text = _chattable.get.key
   }
 
-  def username: Option[String] = {
-    val u = _user.getOrElse {
-      return None
-    }
-    return Some(u.username)
+  // Reinitialize the state of the chat room
+  def initialize(chattable: Chattable, messages: ArrayBuffer[Room.Message]) {
+    this.chattable = chattable
+    this.messages = messages
+    this.showStatus("")
   }
 
   def handleSend(messages: String) {
     import Client._
-    roomId match {
-      case Some(id) =>  MyApp.clientActor ! RequestToSendMessage(Group, id, textArea.text.value)
-      case None => MyApp.clientActor ! RequestToSendMessage(Personal, user.get.username, textArea.text.value)
+    chattable match {
+      case Some(c) => 
+        MyApp.clientActor ! RequestToSendMessage(c, textArea.text.value)
+      case None => // Do Nothing
     }
+    // roomId match {
+    //   case Some(id) =>  MyApp.clientActor ! RequestToSendMessage(Group, id, textArea.text.value)
+    //   case None => MyApp.clientActor ! RequestToSendMessage(Personal, user.get.username, textArea.text.value)
+    // }
   }
 
   def handleTyped(action: KeyEvent) {
@@ -68,7 +69,8 @@ class ChatRoomController(
     }
   }
 
-  def showTyping(username: String) {
+  def showStatus(value: String) {
+    typingLabel.text = value
     // typingLabel.text = s"$username is typing..."
     // val task = new Runnable { 
     //   def run() { 
@@ -80,11 +82,11 @@ class ChatRoomController(
     // MyApp.scheduler.scheduleOnce(2 second, task)
   }
 
-  def addMessage(message: ChatRoom.Message) {
+  def addMessage(message: Room.Message) {
     messages += convertMessageToString(message)
   } 
 
-  private def convertMessageToString(message: ChatRoom.Message): String = {
+  private def convertMessageToString(message: Room.Message): String = {
     return s"${message.from}: ${message.value}"
   }
 }

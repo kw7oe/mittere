@@ -117,6 +117,7 @@
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <ListView fx:id="chatRoomList" prefHeight="297.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Button layoutX="35.0" layoutY="297.0" mnemonicParsing="false" onAction="#handleCreateChatRoom" text="Create Chat Room" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="34.0" />
                      </children>
                   </AnchorPane>
             </content>
