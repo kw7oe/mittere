@@ -22,7 +22,7 @@ class CreateChatRoomDialogController(
     if (roomNameField.text.value.length == 0) {
       MyApp.showAlert(
        _title =  "Input Expected",
-       _headerText = "Room Name Required",
+       _headerText = "Room Name is required.",
        _contentText = "Please ensure the room name is not blank."
       )
     } else {

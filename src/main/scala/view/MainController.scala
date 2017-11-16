@@ -28,7 +28,15 @@ class MainController(
 
   def handleJoin(action: ActionEvent) {
     import Client._
-    MyApp.clientActor ! RequestToJoin(server.text.value, port.text.value, username.text.value)
+    if (username.text.value.length == 0) {
+      MyApp.showAlert(
+       _title =  "Input Expected",
+       _headerText = "Username is required.",
+       _contentText = "Please ensure the username is not blank."
+      )
+    } else {
+      MyApp.clientActor ! RequestToJoin(server.text.value, port.text.value, username.text.value)
+    }
   }
 
   def handleCreateChatRoom(action: ActionEvent) {

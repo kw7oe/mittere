@@ -19,8 +19,10 @@ All the tasks below are subject to change.
 ### FXML
 - [X] Chat Screen (Similar to telegram/whatsapp without profile picture)
 - [X] User & Chat Room List (Prefer to be sidebar with tab/accordian)
+- [ ] User should not be able to see the "Create Chat Room" button before Join.
 - [ ] Make Chat Screen responsive
 - [ ] Dialog for About
+- [ ] MenuItem functionality.
 
 ### Backend
 - [X] Able to send and receive message to/from other user.
@@ -34,10 +36,11 @@ All the tasks below are subject to change.
 
 ### Error Handling
 - [X] Interface Binding should not crash while user do not enter integer.
-- [ ] **Handle when incorrect port and localhost inserted.** 
-- [X] **Check if username is unique.**
-- [ ] **Check if group name is unique.**
+- [X] Handle when incorrect port and localhost inserted.
+- [X] Check if username is unique.
+- [X] Check if group name is unique.
 - [X] Remove user from online when disconnected.
+
 
 
 

@@ -1,4 +1,4 @@
-import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter}
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.immutable.{HashMap, HashSet}
 
@@ -43,6 +43,7 @@ class Client extends Actor with ActorLogging {
 
   override def preStart(): Unit = {
     context.system.eventStream.subscribe(self, classOf[akka.remote.DisassociatedEvent])
+    context.system.eventStream.subscribe(self, classOf[DeadLetter])
   }
 
   def receive = {
@@ -51,7 +52,17 @@ class Client extends Actor with ActorLogging {
       serverActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/server"))
       username = Some(name)
       serverActor.get ! Server.Join(username.get)
+    case d: DeadLetter =>
+      log.info(s"Receive DeadLetter: $d")
+      if (d.message == Server.Join(username.get)) {
+        MyApp.displayActor ! Display.ShowAlert(
+          "Invalid Address",
+          "Server and port combination provided cannot be connect.",
+          "Please enter a different server and port combination."
+        )
+      }     
     case InvalidUsername =>
+      log.info("Receive InvalidUsername")
       MyApp.displayActor ! Display.ShowAlert(
         "Invalid Username", 
         "Username has already been taken.", 
@@ -111,21 +122,28 @@ class Client extends Actor with ActorLogging {
     case RequestToCreateChatRoom(tempRoom) =>
       log.info(s"RequestToCreateChatRoom: $tempRoom")
 
-      // Initialize Room and add into roomNameToRoom
-      if (!roomNameToRoom.contains(tempRoom.name)) {
-        tempRoom.users = HashSet(self)
-        roomNameToRoom += (tempRoom.name -> tempRoom)
-      }
+      if (roomNameToRoom.contains(tempRoom.name)) {
+        MyApp.displayActor ! Display.ShowAlert(
+        "Invalid Room Name", 
+        "Room name has already been taken.", 
+        "Please enter a different room name.")
+      } else {
+        // Initialize Room and add into roomNameToRoom
+        if (!roomNameToRoom.contains(tempRoom.name)) {
+          tempRoom.users = HashSet(self)
+          roomNameToRoom += (tempRoom.name -> tempRoom)
+        }
 
-      val room = roomNameToRoom.get(tempRoom.name)
+        val room = roomNameToRoom.get(tempRoom.name)
 
-      // Inform the host
-      serverActor.get ! Server.ChatRoomCreated(room.get)
+        // Inform the host
+        serverActor.get ! Server.ChatRoomCreated(room.get)
 
-      // Broadcast the created room to other users
-      usernameToClient.foreach { case (_, userActor) =>
-        userActor ! Client.NewChatRoom(room.get)
-      }
+        // Broadcast the created room to other users
+        usernameToClient.foreach { case (_, userActor) =>
+          userActor ! Client.NewChatRoom(room.get)
+        }
+      }     
     case JoinChatRoom(key) =>
       log.info(s"JoinChatRoom: $key")
       val room = roomNameToRoom.get(key)
