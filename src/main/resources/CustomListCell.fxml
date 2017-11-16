@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#handleShowChat" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
    <children>
-      <Label fx:id="label" layoutX="8.0" layoutY="5.0" onMouseClicked="#handleShowChat" prefWidth="200.0" text="Label">
+      <Label fx:id="label" layoutX="19.0" layoutY="5.0" prefHeight="17.0" prefWidth="189.0" text="Label">
          <contextMenu>
             <ContextMenu>
               <items>
@@ -14,5 +16,6 @@
               </items>
             </ContextMenu>
          </contextMenu></Label>
+      <Circle fill="#1fff25" layoutX="8.0" layoutY="13.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
    </children>
 </AnchorPane>
