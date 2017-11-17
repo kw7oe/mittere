@@ -26,6 +26,14 @@ class MainController(
   userList.items = userListItems
   chatRoomList.items = chatRoomListItems
 
+  //menu item
+  def handleClose(action: ActionEvent){
+    System.exit(0)
+  }
+  def showAbout(action: ActionEvent){
+    MyApp.showAbout()
+  }
+
   def handleJoin(action: ActionEvent) {
     import Client._
     if (username.text.value.length == 0) {

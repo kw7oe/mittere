@@ -83,6 +83,22 @@ object MyApp extends JFXApp {
     }.showAndWait
   }
 
+  def showAbout(){
+    val aboutLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
+    val aboutFXML = getClass.getResourceAsStream("About.fxml")
+    aboutLoader.load(aboutFXML)
+    val aboutUI = aboutLoader.getRoot[javafx.scene.layout.Pane]
+    val dialog = new Stage() {
+      initModality(Modality.APPLICATION_MODAL)
+      initOwner(stage)
+      title = "About"
+      scene = new Scene {
+        root = aboutUI
+      }
+    }
+    dialog.showAndWait()
+  }
+
   // Set Config with specified IP address
   private def setConfigWith(ipaddress: String): Config = {
     val overrideConf = ConfigFactory.parseString(
