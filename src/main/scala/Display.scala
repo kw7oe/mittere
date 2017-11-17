@@ -20,7 +20,7 @@ object Display {
                           messages: ArrayBuffer[Room.Message])
 
   // Chatting related
-  case class ShowTyping(roomId: String, username: String)
+  case class ShowTyping(chattable: Chattable, key: String, username: String)
   case class AddMessage(chattable: Chattable,
                         key: String, 
                         message: Room.Message)
@@ -53,9 +53,6 @@ class Display extends Actor with ActorLogging {
     case RemoveJoin(user) =>
       Platform.runLater {
         MyApp.mainController.removeJoin(user)
-        // if (Some(user) == MyApp.chatController.user) {
-        //   MyApp.chatController.showStatus("is offline")
-        // }
       }      
     case ShowNewChatRoom(room) =>
       Platform.runLater {
@@ -67,15 +64,15 @@ class Display extends Actor with ActorLogging {
         MyApp.mainController.showChatRoom
         MyApp.mainController.hideUnread(chattable.key)
       }
-    case ShowTyping(roomId, username) =>
-      // if (roomId == MyApp.chatController.roomId) {
-      //   Platform.runLater {
-      //     MyApp.chatController.showStatus(username)
-      //   }
-      // }      
+    case ShowTyping(chattable, key, username) =>
+      if (shouldDisplay(chattable, key)) {
+        Platform.runLater {
+          MyApp.chatController.showStatus(username + " is typing...")
+        }
+      }      
     case AddMessage(chattable, key, message) =>
       Platform.runLater {
-        if (shouldDisplayMessage(chattable, key)) {
+        if (shouldDisplay(chattable, key)) {
           MyApp.chatController.addMessage(message)
         } else {
           log.info("Cannot add message")
@@ -84,7 +81,7 @@ class Display extends Actor with ActorLogging {
     case _ => log.info("Receive unknown message")
   }
 
-  def shouldDisplayMessage(chattable: Chattable, key: String): Boolean = {
+  def shouldDisplay(chattable: Chattable, key: String): Boolean = {
     return !MyApp.chatController.chattable.isEmpty && 
            key == MyApp.chatController.chattable.get.key &&
            chattable.chattableType == MyApp.chatController.chattable.get.chattableType
