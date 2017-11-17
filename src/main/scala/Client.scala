@@ -19,8 +19,8 @@ object Client {
   case class NewChatRoom(room: Room)
 
   // Chatting
-  case class Typing(roomType: ChatRoomType, key: String)
-  case class ReceiveShowTyping(roomId: String, username: String)
+  case class Typing(chattable: Chattable)
+  case class ReceiveShowTyping(chattable: Chattable, key: String, username: String)
   case class RequestToSendMessage(chattable: Chattable, msg: String)
   case class ReceiveMessage(chattable: Chattable, key: String, message: Room.Message)
 }
@@ -156,18 +156,25 @@ class Client extends Actor with ActorLogging {
       log.info(s"NewChatRoom: $room")
       roomNameToRoom += (room.name -> room)
       MyApp.displayActor ! Display.ShowNewChatRoom(room)
-    case Typing(roomType, key) =>
-      log.info(s"Typing: $roomType, $key")
-      // val actor = roomType match {
-      //   case Group => chatRoomActors.get(key)
-      //   case Personal => usernameToClient.get(key)
-      // }
-      // actor.get ! ChatRoom.ShowTyping(username.get)
-    case ReceiveShowTyping(roomId, username) =>
-      log.info(s"ReceiveShowTyping: $roomId, $username")
-      // if (username != this.username.get) {
-      //   MyApp.displayActor ! Display.ShowTyping(roomId, username)
-      // }
+    case Typing(chattable) =>
+      log.info(s"Typing: $chattable")
+      chattable.chattableType match {
+        case Group => 
+          val room = roomNameToRoom.get(chattable.key)
+          room foreach { r => 
+            r.users.foreach { u =>
+              u ! Client.ReceiveShowTyping(chattable, chattable.key, username.get)
+            }
+          }
+        case Personal => 
+          val actor = usernameToClient.get(chattable.key)
+          actor foreach { a => a ! Client.ReceiveShowTyping(chattable, username.get, username.get)}
+      }
+    case ReceiveShowTyping(chattable, key, username) =>
+      log.info(s"ReceiveShowTyping: $chattable, $username")
+       if (username != this.username.get) {
+        MyApp.displayActor ! Display.ShowTyping(chattable, key, username)
+       }
     case RequestToSendMessage(chattable, msg) =>
       log.info(s"RequestToSendMessage: $chattable, $msg")
       chattable.chattableType match {

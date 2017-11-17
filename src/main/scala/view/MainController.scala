@@ -4,8 +4,9 @@ import scalafxml.core.{FXMLLoader, NoDependencyResolver}
 import scalafx.Includes._
 import scalafx.scene.control.{Button, Label, TextField, ListView, ListCell}
 import scalafx.scene.layout.BorderPane
-import scala.collection.mutable.ArrayBuffer
+import scalafx.scene.input.{KeyEvent, KeyCode}
 import scalafxml.core.macros.sfxml
+import scala.collection.mutable.ArrayBuffer
 import scalafx.collections.ObservableBuffer
 
 @sfxml
@@ -34,7 +35,7 @@ class MainController(
     MyApp.showAbout()
   }
 
-  def handleJoin(action: ActionEvent) {
+  def handleJoin() {
     import Client._
     if (username.text.value.length == 0) {
       MyApp.showAlert(
@@ -53,6 +54,12 @@ class MainController(
     val okClicked = MyApp.showCreateChatRoomDialog(tempRoom)
     if (okClicked) {
       MyApp.clientActor ! RequestToCreateChatRoom(tempRoom)
+    }
+  }
+
+  def handleKeyBoard(action: KeyEvent) {
+    if(action.code == KeyCode.ENTER) {
+      handleJoin()
     }
   }
 

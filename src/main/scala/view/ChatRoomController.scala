@@ -20,6 +20,7 @@ class ChatRoomController(
 
   var messages: ObservableBuffer[String] = new ObservableBuffer[String]()
   private var _chattable: Option[Chattable] = None
+  final var shouldListenToTyping = true
   messageList.items = messages
 
   def messages_=(messages: ArrayBuffer[Room.Message]) {
@@ -37,7 +38,7 @@ class ChatRoomController(
   def initialize(chattable: Chattable, messages: ArrayBuffer[Room.Message]) {
     this.chattable = chattable
     this.messages = messages
-    this.showStatus("")
+    this.typingLabel.text = ""
   }
 
   def handleSend(messages: String) {
@@ -58,25 +59,35 @@ class ChatRoomController(
       action.consume()
       handleSend(textArea.text.value)
       textArea.text.value = ""
-    } else {
-      // roomId match {
-      //   case Some(id) =>  MyApp.clientActor ! Typing(Group, roomId.get)
-      //   case None => MyApp.clientActor ! Typing(Personal, user.username)
-      // }
     }
+
+    if (shouldListenToTyping) {
+      // Should let it crash if chattable is empty
+      // As it should be technically impossible to 
+      // have access to ChatRoomController without
+      // chattable
+      MyApp.clientActor ! Typing(chattable.get)      
+      shouldListenToTyping = false
+      val task = new Runnable { 
+        def run() { 
+          shouldListenToTyping = true
+        } 
+      }
+      MyApp.scheduler.scheduleOnce(5 second, task)
+    }
+
   }
 
   def showStatus(value: String) {
     typingLabel.text = value
-    // typingLabel.text = s"$username is typing..."
-    // val task = new Runnable { 
-    //   def run() { 
-    //     Platform.runLater {
-    //       typingLabel.text = ""
-    //     }
-    //   } 
-    // }
-    // MyApp.scheduler.scheduleOnce(2 second, task)
+    val task = new Runnable { 
+      def run() { 
+        Platform.runLater {
+          typingLabel.text = ""
+        }
+      } 
+    }
+    MyApp.scheduler.scheduleOnce(5 second, task)
   }
 
   def addMessage(message: Room.Message) {
