@@ -6,7 +6,7 @@ trait NodeActor extends Actor {
   var serverActor: Option[ActorSelection] = None
   var username: Option[String] = None
   var usernameToClient: Map[String,ActorRef] = new HashMap()
-  var usernameToMessages: Map[String, ArrayBuffer[Room.Message]] = new HashMap()
+  var usernameToRoom: Map[String, Room] = new HashMap()
   var roomNameToRoom: Map[String, Room] = new HashMap()
 
   override def preStart(): Unit = {

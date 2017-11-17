@@ -52,7 +52,7 @@ object MyApp extends JFXApp {
     system.terminate
   }
 
-  def showCreateChatRoomDialog(room: Room) : Boolean = {
+  def showCreateChatRoomDialog() {
     val resource = getClass.getResourceAsStream("CreateChatRoomDialog.fxml")
     val loader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
     loader.load(resource)
@@ -67,9 +67,7 @@ object MyApp extends JFXApp {
       }
     }
     controller.dialogStage = dialog
-    controller.room = room
     dialog.showAndWait();
-    return controller.okClicked;
   }
 
   def showAlert(tuple: Tuple3[String, String, String]) : Unit = {

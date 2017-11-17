@@ -10,12 +10,11 @@ class CreateChatRoomDialogController(
   private val roomNameField: TextField,
   ) {
   var dialogStage: Stage = null 
-  private var _room: Room = null
-  var okClicked: Boolean = false
+  private var _roomName: String = null
   
-  def room = _room
-  def room_=(room: Room) {
-    _room = room
+  def roomName = _roomName
+  def roomName_=(name: String) {
+    _roomName = name
   }
 
   val roomNameBlankErrorMessage = (
@@ -28,8 +27,9 @@ class CreateChatRoomDialogController(
     if (roomNameField.text.value.length == 0) {
       MyApp.showAlert(roomNameBlankErrorMessage)
     } else {
-      _room.name = roomNameField.text.value
-      okClicked = true
+      import Node._
+      _roomName = roomNameField.text.value
+      MyApp.clientActor ! RequestToCreateChatRoom(_roomName)
       dialogStage.close()
     }
   }

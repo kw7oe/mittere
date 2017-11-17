@@ -1,5 +1,6 @@
 import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef}
 import scala.collection.immutable.HashSet
+import scala.collection.mutable.ArrayBuffer
 
 trait SessionManagement extends ActorLogging { this: Actor =>
   import Node._
@@ -7,8 +8,8 @@ trait SessionManagement extends ActorLogging { this: Actor =>
   var serverActor: Option[ActorSelection]
   var username: Option[String]
   var usernameToClient: Map[String,ActorRef]
+  var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
-
 
   private val invalidRoomNameErrorMessage = (
     "Invalid Room Name", 
@@ -30,43 +31,59 @@ trait SessionManagement extends ActorLogging { this: Actor =>
         usernameToClient -= value._1
 
         // Inform Display to remove user
-        val user = User(value._1, value._2)
-        MyApp.displayActor ! Display.RemoveJoin(user)
+        val room = usernameToRoom.get(value._1)
+
+        room.foreach { r => 
+          MyApp.displayActor ! Display.RemoveJoin(r)
+        }
       }
     case NewUser(name, ref) =>
       // Keep track of new user
       usernameToClient += (name -> ref)
-      val user = User(name, ref)
+      val identifier = Array(name, username.get).sorted.mkString(":")
+      val room = new Room(
+        name = name,
+        identifier = identifier,
+        chatRoomType = Personal,
+        messages = new ArrayBuffer[Room.Message](),
+        users = HashSet(self, ref)
+      )
+      usernameToRoom += (identifier -> room)
 
       // Inform Display to show new user
-      MyApp.displayActor ! Display.ShowJoin(user)
-    case RequestToCreateChatRoom(tempRoom) =>
-      log.info(s"RequestToCreateChatRoom: $tempRoom")
+      MyApp.displayActor ! Display.ShowJoin(room)
+    case RequestToCreateChatRoom(roomName) =>
+      log.info(s"RequestToCreateChatRoom: $roomName")
 
       // Check if the room name already used
-      if (roomNameToRoom.contains(tempRoom.name)) {
+      if (roomNameToRoom.contains(roomName)) {
         displayAlert(invalidRoomNameErrorMessage)
       } else {
+        val room = new Room(
+          name = roomName,
+          identifier = roomName,
+          chatRoomType = Group,
+          messages = new ArrayBuffer[Room.Message](),
+          users = HashSet(self)
+        )
 
-        // Add creator to the room users
-        tempRoom.users = HashSet(self)
         // Keep track of the info of each room
-        roomNameToRoom += (tempRoom.name -> tempRoom)
+        roomNameToRoom += (roomName -> room)
 
         // Get the room from our record
-        val room = roomNameToRoom.get(tempRoom.name)
+        val createdRoom = roomNameToRoom.get(roomName).get
 
         // Inform the host about the new room
-        serverActor.get ! Server.ChatRoomCreated(room.get)
+        serverActor.get ! Server.ChatRoomCreated(createdRoom)
 
         // Broadcast the created room to other users
         usernameToClient.foreach { case (_, userActor) =>
-          userActor ! NewChatRoom(room.get)
+          userActor ! NewChatRoom(createdRoom)
         }
       }     
-    case JoinChatRoom(key) =>
-      log.info(s"JoinChatRoom: $key")
-      val room = roomNameToRoom.get(key)
+    case JoinChatRoom(identifier) =>
+      log.info(s"JoinChatRoom: $identifier")
+      val room = roomNameToRoom.get(identifier)
       room.foreach { r => r.users += sender() }
     case NewChatRoom(room) =>
       // Received broadcast from other node 

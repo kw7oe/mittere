@@ -3,7 +3,6 @@ import scala.collection.immutable.{HashMap, HashSet}
 
 object Server {
   case class Join(username: String)
-  case class CreateChatRoom(user: User)
   case class ChatRoomCreated(room: Room)
   case class UpdateRoom(key: String)
 }

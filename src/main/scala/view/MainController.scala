@@ -11,7 +11,7 @@ import scalafx.collections.ObservableBuffer
 
 @sfxml
 class MainController(
-  private val userList: ListView[User],
+  private val userList: ListView[Room],
   private val chatRoomList: ListView[Room],
   private val server: TextField,
   private val port: TextField,
@@ -20,7 +20,7 @@ class MainController(
   private val borderPane: BorderPane
 ) {
 
-  var userListItems: ObservableBuffer[User] = new ObservableBuffer[User]()
+  var userListItems: ObservableBuffer[Room] = new ObservableBuffer[Room]()
   var chatRoomListItems: ObservableBuffer[Room] = new ObservableBuffer[Room]()
   setupUserListCell()
   setupRoomListCell()
@@ -44,11 +44,7 @@ class MainController(
 
   def handleCreateChatRoom(action: ActionEvent) {
     import Node._
-    val tempRoom = Room(null, new ArrayBuffer[Room.Message](), null)
-    val okClicked = MyApp.showCreateChatRoomDialog(tempRoom)
-    if (okClicked) {
-      MyApp.clientActor ! RequestToCreateChatRoom(tempRoom)
-    }
+    MyApp.showCreateChatRoomDialog()
   }
 
   def handleKeyBoard(action: KeyEvent) {
@@ -57,9 +53,9 @@ class MainController(
     }
   }
 
-  def initialize(userEntries: Map[String, ActorRef], 
+  def initialize(userEntries: Map[String, Room], 
                  roomEntries: Map[String, Room]) {
-    val users = User(userEntries)
+    val users = Room(userEntries)
     userListItems.appendAll(users) 
     val rooms = Room(roomEntries)
     chatRoomListItems.appendAll(rooms)
@@ -78,11 +74,11 @@ class MainController(
     chatRoomListItems -= room
   }
 
-  def showJoin(name: User) {
+  def showJoin(name: Room) {
     userListItems += name
   }
 
-  def removeJoin(name: User) {
+  def removeJoin(name: Room) {
     userListItems -= name
   }
 
@@ -94,7 +90,7 @@ class MainController(
     //tell list cell to show unread
     println("Showing unread")
     for(userCell <- userListItems.toArray){
-      if(userCell.username == from){
+      if(userCell.name == from){
         userCell.unreadNumber += 1
         setupUserListCell()
       }
@@ -108,7 +104,7 @@ class MainController(
   }
   def hideUnread(from: String){
     for(userCell <- userListItems.toArray){
-      if(userCell.username == from){
+      if(userCell.name == from){
         userCell.unreadNumber = 0
         setupUserListCell()
       }
@@ -123,8 +119,8 @@ class MainController(
   // Customize the ListCell in the List View
   private def setupUserListCell() {
     userList.cellFactory = { _ => 
-      new ListCell[User]() {
-        item.onChange { (user, oldValue, newValue) => {
+      new ListCell[Room]() {
+        item.onChange { (room, oldValue, newValue) => {
           if (newValue == null) {
             graphic = null
           } else {
@@ -134,8 +130,8 @@ class MainController(
             val root = loader.getRoot[javafx.scene.layout.AnchorPane]
             val controller = loader.getController[ListCellController#Controller]
 
-            controller.chattable = user.value
-            controller.unread = user.value.unreadNumber
+            controller.room = room.value
+            controller.unread = room.value.unreadNumber
             graphic = root
           }
         }}
@@ -156,7 +152,7 @@ class MainController(
             val root = loader.getRoot[javafx.scene.layout.AnchorPane]
             val controller = loader.getController[ListCellController#Controller]
 
-            controller.chattable = room.value
+            controller.room = room.value
             controller.unread = room.value.unreadNumber
             graphic = root
           }

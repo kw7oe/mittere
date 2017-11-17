@@ -1,11 +1,14 @@
 import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter}
+import scala.collection.immutable.HashSet
+import scala.collection.mutable.ArrayBuffer
 
 trait JoinManagement extends ActorLogging { this: Actor =>
   import Node._
 
   var serverActor: Option[ActorSelection]
   var username: Option[String]
-  var usernameToClient: Map[String,ActorRef]
+  var usernameToClient: Map[String, ActorRef]
+  var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
 
   private val invalidAddressErrorMessage = (
@@ -39,10 +42,25 @@ trait JoinManagement extends ActorLogging { this: Actor =>
 
       // Keep track of the info locally
       usernameToClient = users
+
+      // Create One to One Room for each online users
+      usernameToClient.foreach { case (name, ref) => 
+        // Create a unique identifier for the room
+        val identifier = Array(name, username.get).sorted.mkString(":")
+        val room = new Room(
+          name = name,
+          identifier = identifier,
+          chatRoomType = Personal,
+          messages = new ArrayBuffer[Room.Message](),
+          users = HashSet(self, ref)
+        )
+
+        usernameToRoom += (identifier -> room)
+      }
       roomNameToRoom = rooms
 
       // Initialize Display with the info received
-      MyApp.displayActor ! Display.Initialize(usernameToClient, roomNameToRoom)
+      MyApp.displayActor ! Display.Initialize(usernameToRoom, roomNameToRoom)
   }
   
   private def isJoinDeadLetter(deadLetter: DeadLetter): Boolean = {
