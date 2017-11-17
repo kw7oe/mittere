@@ -10,15 +10,14 @@ import scala.collection.mutable.ArrayBuffer
 import scalafx.collections.ObservableBuffer
 
 @sfxml
-class MainController(
-  private val userList: ListView[Chattable],
-  private val roomList: ListView[Chattable],
-  private val createRoomButton: Button,
-  private val quitButton: Button,
-  private val roomNameLabel: Label,
-  private val descriptionLabel: Label,
-  private val messageList: ListView[Messages],
-  private val messageArea: TextArea
+class MainController1(
+  private val userList: ListView[User],
+  private val chatRoomList: ListView[Room],
+  private val server: TextField,
+  private val port: TextField,
+  private val username: TextField,
+  private val joinButton: Button,
+  private val borderPane: BorderPane
 ) {
 
   var userListItems: ObservableBuffer[User] = new ObservableBuffer[User]()

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #34374D;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JoinScreenController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" maxWidth="275.0" minWidth="0.0" prefWidth="275.0" />
+    <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="250.0" />
+      <ColumnConstraints hgrow="NEVER" maxWidth="275.0" minWidth="0.0" prefWidth="275.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="168.0" minHeight="10.0" prefHeight="166.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="276.0" minHeight="10.0" prefHeight="225.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="195.0" minHeight="10.0" prefHeight="124.0" valignment="TOP" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" minWidth="250.0" prefHeight="34.0" prefWidth="250.0" text="Mittere" textAlignment="CENTER" textFill="#fafafc" GridPane.columnIndex="1">
+         <font>
+            <Font name="Hiragino Kaku Gothic StdN W8" size="34.0" />
+         </font>
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+      </Label>
+      <GridPane prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="56.0" minHeight="16.0" prefHeight="56.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="41.0" minHeight="41.0" prefHeight="41.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="36.0" minHeight="36.0" prefHeight="36.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="41.0" minHeight="41.0" prefHeight="41.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="36.0" minHeight="36.0" prefHeight="36.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="41.0" minHeight="41.0" prefHeight="41.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Username" textFill="#fafafc">
+               <font>
+                  <Font name="Helvetica Neue" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="usernameField" onKeyPressed="#handleKeyboard" style="-fx-background-color: #fafafc;" GridPane.rowIndex="1">
+               <font>
+                  <Font name="Helvetica Neue" size="14.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets top="11.0" />
+               </GridPane.margin>
+            </TextField>
+            <Label text="Server" textFill="#fafafc" GridPane.rowIndex="2">
+               <font>
+                  <Font name="Helvetica Neue" size="14.0" />
+               </font>
+            </Label>
+            <Label text="Port" textFill="#fafafc" GridPane.rowIndex="4">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="serverField" onKeyPressed="#handleKeyboard" style="-fx-background-color: #fafafc;" GridPane.rowIndex="3">
+               <font>
+                  <Font name="Helvetica Neue" size="14.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="portField" onKeyPressed="#handleKeyboard" style="-fx-background-color: #fafafc;" GridPane.rowIndex="5">
+               <font>
+                  <Font name="Helvetica Neue" size="14.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </TextField>
+         </children>
+      </GridPane>
+      <Button fx:id="joinButton" minHeight="35.0" minWidth="60.0" mnemonicParsing="false" onAction="#handleJoin" prefHeight="35.0" prefWidth="60.0" style="-fx-background-color: #54577c; -fx-background-radius: 6px;" text="Join" textFill="#fafafc" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets top="15.0" />
+         </GridPane.margin>
+         <font>
+            <Font name="Hiragino Kaku Gothic StdN W8" size="10.0" />
+         </font>
+      </Button>
+   </children>
+</GridPane>

@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#handleShowChat" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
+<HBox alignment="CENTER" minHeight="30.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
    <children>
-      <Label fx:id="label" layoutX="19.0" layoutY="5.0" prefHeight="17.0" prefWidth="125.0" text="Label">
+      <Circle fill="#1fff25" radius="3.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+      <Label fx:id="name" prefHeight="30.0" prefWidth="150.0" text="Name" textFill="#fafafc">
          <contextMenu>
             <ContextMenu>
               <items>
                   <MenuItem fx:id="kickMenuItem" mnemonicParsing="false" onAction="#kick" text="Kick" />
               </items>
             </ContextMenu>
-         </contextMenu></Label>
-      <Circle fill="#1fff25" layoutX="8.0" layoutY="13.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
-      <Label fx:id="unreadNumber" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="1.0" layoutX="133.0" layoutY="5.0" opacity="0.0" prefHeight="14.0" prefWidth="14.0" text="0" textAlignment="CENTER">
+         </contextMenu>
          <font>
-            <Font size="8.0" />
+            <Font name="Helvetica Neue" size="11.0" />
          </font>
-         <graphic>
-            <Circle fill="#e8b29c" radius="7.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
-         </graphic>
+      </Label>
+      <Label fx:id="unreadNumber" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="1.0" opacity="0.0" prefHeight="14.0" prefWidth="14.0" text="0" textAlignment="CENTER" textFill="#fafafc">
+         <font>
+            <Font name="Helvetica Neue" size="9.0" />
+         </font>
       </Label>
    </children>
-</AnchorPane>
+   <padding>
+      <Insets left="20.0" right="20.0" />
+   </padding>
+</HBox>
