@@ -18,13 +18,15 @@ class CreateChatRoomDialogController(
     _room = room
   }
 
+  val roomNameBlankErrorMessage = (
+    "Input Expected",
+    "Room Name is required.",
+    "Please ensure the room name is not blank."
+  )
+
   def handleAddRoom() {
     if (roomNameField.text.value.length == 0) {
-      MyApp.showAlert(
-       _title =  "Input Expected",
-       _headerText = "Room Name is required.",
-       _contentText = "Please ensure the room name is not blank."
-      )
+      MyApp.showAlert(roomNameBlankErrorMessage)
     } else {
       _room.name = roomNameField.text.value
       okClicked = true

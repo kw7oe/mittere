@@ -26,14 +26,14 @@ class Server extends Actor with ActorLogging {
       log.info(s"Join from $name")
 
       if (usernameToClient.contains(name)) {
-        sender() ! Client.InvalidUsername
+        sender() ! Node.InvalidUsername
       } else {
         usernameToClient.foreach { case (_, userActor) =>
-          userActor ! Client.NewUser(name, sender())
+          userActor ! Node.NewUser(name, sender())
         }
 
         usernameToClient += (name -> sender())
-        sender() ! Client.Joined(usernameToClient, roomNameToRoom)
+        sender() ! Node.Joined(usernameToClient, roomNameToRoom)
       }      
     case ChatRoomCreated(room) =>
       log.info(s"ChatRoomCreated: $room")

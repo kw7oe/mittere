@@ -6,9 +6,7 @@ object Display {
   // Initialization
   case class Initialize(names: Map[String,ActorRef],
                         rooms: Map[String,Room])
-  case class ShowAlert(title: String,
-                       headerText: String,
-                       contentText: String)
+  case class ShowAlert(tuple: Tuple3[String, String, String])
 
   // User related
   case class ShowJoin(user: User)
@@ -28,7 +26,7 @@ object Display {
 
 class Display extends Actor with ActorLogging {
   import Display._
-  import Client._
+  import Node._
 
   def receive: Receive = {
     case Initialize(users, rooms) =>
@@ -37,13 +35,9 @@ class Display extends Actor with ActorLogging {
         MyApp.mainController.clearJoin()
       }
 
-    case ShowAlert(title, headerText, contentText) => {
+    case ShowAlert(tuple) => {
       Platform.runLater {
-        MyApp.showAlert(
-          title,
-          headerText,
-          contentText
-        )
+        MyApp.showAlert(tuple)
       }
     }
     case ShowJoin(user) =>

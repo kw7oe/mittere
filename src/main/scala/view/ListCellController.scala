@@ -21,7 +21,7 @@ class ListCellController(
     label.text = chattable.key
   }
   def handleShowChat(action: MouseEvent) {
-    import Client._
+    import Node._
     if (action.button == MouseButton.Primary) {
       MyApp.clientActor ! RequestToChatWith(chattable.get)
     }

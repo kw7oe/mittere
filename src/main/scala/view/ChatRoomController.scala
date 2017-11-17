@@ -42,7 +42,7 @@ class ChatRoomController(
   }
 
   def handleSend(messages: String) {
-    import Client._
+    import Node._
     chattable match {
       case Some(c) => 
         MyApp.clientActor ! RequestToSendMessage(c, textArea.text.value)
@@ -51,7 +51,7 @@ class ChatRoomController(
   }
 
   def handleTyped(action: KeyEvent) {
-    import Client._
+    import Node._
 
     if (action.code == KeyCode.ENTER && action.shiftDown) {
       textArea.appendText("\n")

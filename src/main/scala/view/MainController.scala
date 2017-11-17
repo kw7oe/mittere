@@ -27,21 +27,23 @@ class MainController(
   userList.items = userListItems
   chatRoomList.items = chatRoomListItems
 
+  val usernameBlankErrorMessage = (
+    "Input Expected",
+    "Username is required.",
+    "Please ensure the username is not blank."
+  )
+  
   def handleJoin() {
-    import Client._
+    import Node._
     if (username.text.value.length == 0) {
-      MyApp.showAlert(
-       _title =  "Input Expected",
-       _headerText = "Username is required.",
-       _contentText = "Please ensure the username is not blank."
-      )
+      MyApp.showAlert(usernameBlankErrorMessage)
     } else {
       MyApp.clientActor ! RequestToJoin(server.text.value, port.text.value, username.text.value)
     }
   }
 
   def handleCreateChatRoom(action: ActionEvent) {
-    import Client._
+    import Node._
     val tempRoom = Room(null, new ArrayBuffer[Room.Message](), null)
     val okClicked = MyApp.showCreateChatRoomDialog(tempRoom)
     if (okClicked) {
