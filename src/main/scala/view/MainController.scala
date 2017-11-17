@@ -96,35 +96,42 @@ class MainController(
     borderPane.center = MyApp.chatRoomUI
   }
 
-  def showUnread(from: String){
+  def showUnread(from: String, roomType: String){
     //tell list cell to show unread
     println("Showing unread")
-    for(userCell <- userListItems.toArray){
-      if(userCell.username == from){
-        userCell.unreadNumber += 1
-        setupUserListCell()
+    if(roomType == "personal"){
+      for(userCell <- userListItems.toArray){
+        if(userCell.username == from){
+          userCell.unreadNumber += 1
+          setupUserListCell()
+        }
       }
-    }
-    for(chatRoom <- chatRoomListItems.toArray){
-      if(chatRoom.name == from){
-        chatRoom.unreadNumber += 1
-        setupRoomListCell()
+    }else if (roomType == "group"){
+      for(chatRoom <- chatRoomListItems.toArray){
+        if(chatRoom.name == from){
+          chatRoom.unreadNumber += 1
+          setupRoomListCell()
+        }
       }
-    }
+    } 
   }
-  def hideUnread(from: String){
-    for(userCell <- userListItems.toArray){
-      if(userCell.username == from){
-        userCell.unreadNumber = 0
-        setupUserListCell()
+  def hideUnread(chattable: Chattable){
+    chattable.chattableType match {
+        case Group =>
+          for(chatRoom <- chatRoomListItems.toArray){
+            if(chatRoom.name == chattable.key){
+              chatRoom.unreadNumber = 0
+              setupRoomListCell()
+            }
+          }
+        case Personal =>
+          for(userCell <- userListItems.toArray){
+            if(userCell.username == chattable.key){
+              userCell.unreadNumber = 0
+              setupUserListCell()
+            }
+          }
       }
-    }
-    for(chatRoom <- chatRoomListItems.toArray){
-      if(chatRoom.name == from){
-        chatRoom.unreadNumber = 0
-        setupRoomListCell()
-      }
-    }
   }
   // Customize the ListCell in the List View
   private def setupUserListCell() {

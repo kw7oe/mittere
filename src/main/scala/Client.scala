@@ -202,12 +202,10 @@ class Client extends Actor with ActorLogging {
         case Group =>
           // Extremely DANGER
           roomNameToRoom.get(key).get.messages += msg
-          MyApp.mainController.showUnread(key)
         case Personal =>
           if (!usernameToMessages.contains(key)) {
             usernameToMessages += (key -> new ArrayBuffer[Room.Message]())
           }
-          MyApp.mainController.showUnread(key)
           usernameToMessages.get(key).get += msg
       }
       MyApp.displayActor ! Display.AddMessage(chattable, key, msg)
