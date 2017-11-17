@@ -1,15 +1,15 @@
-import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter}
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.immutable.{HashMap, HashSet}
+import akka.actor.ActorRef
 
 object Node {
-  // SessionManagement
+  // JoinManagement
   case object InvalidUsername
   case class RequestToJoin(serverAddress: String,
                            portNumber: String,
                            username: String)
   case class Joined(clients: Map[String, ActorRef],
                     rooms:  Map[String, Room])
+
+  // SessionManagement
   case class NewUser(name: String, actorRef: ActorRef)
   case class RequestToCreateChatRoom(room: Room)
   case class JoinChatRoom(key: String)
@@ -25,6 +25,7 @@ object Node {
 
 class Node extends 
   NodeActor with 
+  JoinManagement with
   SessionManagement with
   ChatManagement {  
 }

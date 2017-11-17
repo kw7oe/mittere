@@ -14,9 +14,12 @@ trait NodeActor extends Actor {
     context.system.eventStream.subscribe(self, classOf[DeadLetter])
   }
 
-  def receive: Receive = sessionManagement orElse chatManagement
-  
-  // abstract methods to be defined somewhere else
-  protected def chatManagement: Receive
+  def receive: Receive = 
+    joinManagement orElse 
+    sessionManagement orElse 
+    chatManagement
+
+  protected def joinManagement: Receive
   protected def sessionManagement: Receive
+  protected def chatManagement: Receive
 }

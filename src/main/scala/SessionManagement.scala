@@ -1,6 +1,5 @@
-import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter}
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.immutable.{HashMap, HashSet}
+import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef}
+import scala.collection.immutable.HashSet
 
 trait SessionManagement extends ActorLogging { this: Actor =>
   import Node._
@@ -10,62 +9,54 @@ trait SessionManagement extends ActorLogging { this: Actor =>
   var usernameToClient: Map[String,ActorRef]
   var roomNameToRoom: Map[String, Room]
 
-  val invalidAddressErrorMessage = (
-    "Invalid Address",
-    "Server and port combination provided cannot be connect.",
-    "Please enter a different server and port combination."
-  )
 
-  val invalidUsernameErrorMessage = (
-    "Invalid Username", 
-    "Username has already been taken.", 
-    "Please enter a different username"
-  )
-
-  val invalidRoomNameErrorMessage = (
+  private val invalidRoomNameErrorMessage = (
     "Invalid Room Name", 
     "Room name has already been taken.", 
     "Please enter a different room name."
   )
 
   protected def sessionManagement: Receive = {
-    case d: DeadLetter =>
-      log.info(s"Receive DeadLetter: $d")
-      if (isJoinDeadLetter(d)) { 
-        displayAlert(invalidAddressErrorMessage)
-      }   
-    case RequestToJoin(serverAddress, portNumber, name) =>
-      log.info("RequestToJoin")
-      serverActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/server"))
-      username = Some(name)
-      serverActor.get ! Server.Join(username.get)  
-    case InvalidUsername =>
-      log.info("Receive InvalidUsername")
-      displayAlert(invalidUsernameErrorMessage)
-    case Joined(users, rooms)  =>
-      log.info("Joined")
-      usernameToClient = users
-      roomNameToRoom = rooms
-      MyApp.displayActor ! Display.Initialize(usernameToClient, roomNameToRoom)
+    case akka.remote.DisassociatedEvent(local, remote, _) =>
+      // When Remote User disconnected
+      // Check which user disconnected
+      val userInfo = usernameToClient.find { case(_, x) =>
+       x.path.address == remote
+      }
+
+      // If the user exists in our record
+      userInfo.foreach { value => 
+        // Remove tracking
+        usernameToClient -= value._1
+
+        // Inform Display to remove user
+        val user = User(value._1, value._2)
+        MyApp.displayActor ! Display.RemoveJoin(user)
+      }
     case NewUser(name, ref) =>
+      // Keep track of new user
       usernameToClient += (name -> ref)
       val user = User(name, ref)
+
+      // Inform Display to show new user
       MyApp.displayActor ! Display.ShowJoin(user)
     case RequestToCreateChatRoom(tempRoom) =>
       log.info(s"RequestToCreateChatRoom: $tempRoom")
 
+      // Check if the room name already used
       if (roomNameToRoom.contains(tempRoom.name)) {
         displayAlert(invalidRoomNameErrorMessage)
       } else {
-        // Initialize Room and add into roomNameToRoom
-        if (!roomNameToRoom.contains(tempRoom.name)) {
-          tempRoom.users = HashSet(self)
-          roomNameToRoom += (tempRoom.name -> tempRoom)
-        }
 
+        // Add creator to the room users
+        tempRoom.users = HashSet(self)
+        // Keep track of the info of each room
+        roomNameToRoom += (tempRoom.name -> tempRoom)
+
+        // Get the room from our record
         val room = roomNameToRoom.get(tempRoom.name)
 
-        // Inform the host
+        // Inform the host about the new room
         serverActor.get ! Server.ChatRoomCreated(room.get)
 
         // Broadcast the created room to other users
@@ -78,13 +69,15 @@ trait SessionManagement extends ActorLogging { this: Actor =>
       val room = roomNameToRoom.get(key)
       room.foreach { r => r.users += sender() }
     case NewChatRoom(room) =>
+      // Received broadcast from other node 
+      // about new room
       log.info(s"NewChatRoom: $room")
-      roomNameToRoom += (room.name -> room)
-      MyApp.displayActor ! Display.ShowNewChatRoom(room)
-  }
 
-  private def isJoinDeadLetter(deadLetter: DeadLetter): Boolean = {
-    return deadLetter.message == Server.Join(username.get)
+      // Keep track of the room
+      roomNameToRoom += (room.name -> room)
+
+      // Inform Display to show new room
+      MyApp.displayActor ! Display.ShowNewChatRoom(room)
   }
 
   private def displayAlert(messages: Tuple3[String, String, String]) {
