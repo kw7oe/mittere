@@ -4,3 +4,10 @@
 .list-view {
     -fx-background-color: transparent;
 }
+.btn{
+    -fx-background-color: #54577c;
+    -fx-background-radius: 6;
+}
+.btn:hover{
+    -fx-background-color: #797DA5;
+}

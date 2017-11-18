@@ -294,5 +294,6 @@ class MainController(
 
   def addMessage(message: Room.Message) {
     messages += message
+    messageList.scrollTo(messages.length)
   }
 }
