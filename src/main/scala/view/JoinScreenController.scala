@@ -12,16 +12,15 @@ class JoinScreenController(
   private val joinButton: Button
 ) {
   def handleJoin() {
-    import Client._
+    import Node._
     var server = serverField.text.value
     var port = portField.text.value
     var username = usernameField.text.value
     if (username.length == 0) {
-      MyApp.showAlert(
-       _title =  "Input Expected",
-       _headerText = "Username is required.",
-       _contentText = "Please ensure the username is not blank."
-      )
+      MyApp.showAlert(("Input Expected",
+       "Username is required.",
+       "Please ensure the username is not blank."
+      ))
     } else {
       MyApp.clientActor ! RequestToJoin(server,port,username)
     }

@@ -2,8 +2,8 @@ import scalafx.event.ActionEvent
 import akka.actor.ActorRef
 import scalafxml.core.{FXMLLoader, NoDependencyResolver}
 import scalafx.Includes._
-import scalafx.scene.control.{Button, Label, TextField, ListView, ListCell}
-import scalafx.scene.layout.BorderPane
+import scalafx.scene.control.{Button, Label, TextArea, ListView, ListCell}
+import scalafx.scene.layout.HBox
 import scalafx.scene.input.{KeyEvent, KeyCode}
 import scalafxml.core.macros.sfxml
 import scala.collection.mutable.ArrayBuffer
@@ -12,12 +12,12 @@ import scalafx.collections.ObservableBuffer
 @sfxml
 class MainController(
   private val userList: ListView[Room],
-  private val chatRoomList: ListView[Room],
+  private val roomList: ListView[Room],
   private val createRoomButton: Button,
   private val quitButton: Button,
   private val roomNameLabel: Label,
   private val descriptionLabel: Label,
-  private val messageList: ListView[Messages],
+  private val messageList: ListView[Room.Message],
   private val messageArea: TextArea
 
 ) {
@@ -27,7 +27,7 @@ class MainController(
   setupUserListCell()
   setupRoomListCell()
   userList.items = userListItems
-  chatRoomList.items = chatRoomListItems
+  roomList.items = chatRoomListItems
 
   val usernameBlankErrorMessage = (
     "Input Expected",
@@ -43,24 +43,9 @@ class MainController(
     MyApp.showAbout()
   }
 
-  def handleJoin() {
-    import Node._
-    if (username.text.value.length == 0) {
-      MyApp.showAlert(usernameBlankErrorMessage)
-    } else {
-      MyApp.clientActor ! RequestToJoin(server.text.value, port.text.value, username.text.value)
-    }
-  }
-
   def handleCreateChatRoom(action: ActionEvent) {
     import Node._
-    MyApp.showCreateChatRoomDialog()
-  }
-
-  def handleKeyBoard(action: KeyEvent) {
-    if(action.code == KeyCode.ENTER) {
-      handleJoin()
-    }
+    // MyApp.showCreateChatRoomDialog()
   }
 
   def initialize(userEntries: Map[String, Room], 
@@ -93,7 +78,7 @@ class MainController(
   }
 
   def showChatRoom {  
-    borderPane.center = MyApp.chatRoomUI
+    // borderPane.center = MyApp.chatRoomUI
   }
 
   def showUnread(from: String, roomType: String){
@@ -102,7 +87,7 @@ class MainController(
 
     if(roomType == "personal"){
       for(userCell <- userListItems.toArray){
-        if(userCell.username == from){
+        if(userCell.name == from){
           userCell.unreadNumber += 1
           setupUserListCell()
         }
@@ -117,18 +102,18 @@ class MainController(
     } 
   }
 
-  def hideUnread(chattable: Chattable){
-    chattable.chattableType match {
+  def hideUnread(room: Room){
+    room.chatRoomType match {
         case Group =>
           for(chatRoom <- chatRoomListItems.toArray){
-            if(chatRoom.name == chattable.key){
+            if(chatRoom.name == room.identifier){
               chatRoom.unreadNumber = 0
               setupRoomListCell()
             }
           }
         case Personal =>
           for(userCell <- userListItems.toArray){
-            if(userCell.username == chattable.key){
+            if(userCell.name == room.identifier){
               userCell.unreadNumber = 0
               setupUserListCell()
             }
@@ -146,7 +131,7 @@ class MainController(
             val loader = new FXMLLoader(null, NoDependencyResolver)
             val resource = getClass.getResourceAsStream("CustomListCell.fxml")
             loader.load(resource)
-            val root = loader.getRoot[javafx.scene.layout.AnchorPane]
+            val root = loader.getRoot[javafx.scene.layout.HBox]
             val controller = loader.getController[ListCellController#Controller]
 
             controller.room = room.value
@@ -159,7 +144,7 @@ class MainController(
   }
 
   private def setupRoomListCell() {
-    chatRoomList.cellFactory = { _ => 
+    roomList.cellFactory = { _ => 
       new ListCell[Room]() {
         item.onChange { (room, oldValue, newValue) => {
           if (newValue == null) {
@@ -168,7 +153,7 @@ class MainController(
             val loader = new FXMLLoader(null, NoDependencyResolver)
             val resource = getClass.getResourceAsStream("CustomListCell.fxml")
             loader.load(resource)
-            val root = loader.getRoot[javafx.scene.layout.AnchorPane]
+            val root = loader.getRoot[javafx.scene.layout.HBox]
             val controller = loader.getController[ListCellController#Controller]
 
             controller.room = room.value

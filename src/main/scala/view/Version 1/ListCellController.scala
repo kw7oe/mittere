@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 @sfxml
 class ListCellController(
-  private val label: Label,
+  private val name: Label,
   private val kickMenuItem: MenuItem,
   private val unreadNumber: Label
 ) {
@@ -18,7 +18,7 @@ class ListCellController(
   def room = _room
   def room_=(room: Room) {
     _room = Some(room)
-    label.text = room.name
+    name.text = room.name
   }
   def handleShowChat(action: MouseEvent) {
     import Node._

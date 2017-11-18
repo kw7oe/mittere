@@ -54,7 +54,7 @@ class Display extends Actor with ActorLogging {
     case ShowChatRoom(room, messages) =>
       Platform.runLater {
         MyApp.chatController.initialize(room, messages)
-        MyApp.mainController.showChatRoom
+        // MyApp.mainController.showChatRoom
         MyApp.mainController.hideUnread(room)
       }
     case ShowTyping(room, username) =>
@@ -69,11 +69,11 @@ class Display extends Actor with ActorLogging {
           MyApp.chatController.addMessage(message)
         } else {
           log.info("Cannot add message")
-          chattable.chattableType match {
+          room.chatRoomType match {
             case Group =>
-              MyApp.mainController.showUnread(key,"group")
+              MyApp.mainController.showUnread(room.identifier,"group")
             case Personal =>
-              MyApp.mainController.showUnread(key,"personal")
+              MyApp.mainController.showUnread(room.identifier,"personal")
           }
         }
       }     
