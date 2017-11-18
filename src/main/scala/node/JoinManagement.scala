@@ -60,7 +60,7 @@ trait JoinManagement extends ActorLogging { this: Actor =>
       roomNameToRoom = rooms
 
       // Initialize Display with the info received
-      MyApp.displayActor ! Display.Initialize(usernameToRoom, roomNameToRoom)
+      MyApp.displayActor ! Display.Initialize(usernameToRoom, roomNameToRoom, username.get)
   }
   
   private def isJoinDeadLetter(deadLetter: DeadLetter): Boolean = {

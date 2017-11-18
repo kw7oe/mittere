@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER" minHeight="30.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
+<HBox fx:id="hbox" alignment="CENTER" minHeight="30.0" minWidth="170.0" onMouseClicked="#handleShowChat" prefHeight="30.0" prefWidth="170.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
    <children>
-      <Circle fill="#1fff25" radius="3.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
-      <Label fx:id="name" prefHeight="30.0" prefWidth="150.0" text="Name" textFill="#fafafc">
-         <contextMenu>
-            <ContextMenu>
-              <items>
-                  <MenuItem fx:id="kickMenuItem" mnemonicParsing="false" onAction="#kick" text="Kick" />
-              </items>
-            </ContextMenu>
-         </contextMenu>
+      <Circle fill="#1fff25" radius="3.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+         <HBox.margin>
+            <Insets />
+         </HBox.margin></Circle>
+      <Label fx:id="name" prefHeight="30.0" prefWidth="140.0" text="Name" textFill="#fafafc">
          <font>
             <Font name="Helvetica Neue" size="11.0" />
          </font>
@@ -30,6 +24,6 @@
       </Label>
    </children>
    <padding>
-      <Insets left="20.0" right="20.0" />
+      <Insets left="10.0" />
    </padding>
 </HBox>

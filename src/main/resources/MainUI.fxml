@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #34374d;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #34374d;" stylesheets="MainUI.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
     <ColumnConstraints hgrow="SOMETIMES" minWidth="600.0" prefWidth="600.0" />
@@ -38,11 +38,11 @@
          <children>
             <ScrollPane fitToWidth="true" minHeight="449.0" minWidth="200.0" prefHeight="449.0" prefWidth="200.0" style="-fx-background: #54577c; -fx-border-color: #54577c;">
                <content>
-                  <VBox prefHeight="432.0" prefWidth="198.0" style="-fx-background-color: #54577c;">
+                  <VBox prefHeight="432.0" prefWidth="200.0" style="-fx-background-color: #54577c;">
                      <children>
                         <VBox>
                            <children>
-                              <Label text="Rooms" textFill="#fafafc">
+                              <Label prefHeight="35.0" prefWidth="196.0" text="Rooms" textFill="#fafafc">
                                  <font>
                                     <Font name="Hiragino Kaku Gothic StdN W8" size="14.0" />
                                  </font>
@@ -50,16 +50,16 @@
                                     <Insets bottom="9.0" left="20.0" right="20.0" top="10.0" />
                                  </padding>
                               </Label>
-                              <ListView fx:id="roomList" prefHeight="170.0" prefWidth="200.0" style="-fx-background-color: Transparent;">
+                              <ListView fx:id="roomList" maxWidth="196.0" prefHeight="170.0" prefWidth="196.0">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
                               </ListView>
                            </children>
                         </VBox>
-                        <VBox>
+                        <VBox alignment="CENTER">
                            <children>
-                              <Label text="All users" textFill="#fafafc">
+                              <Label prefHeight="29.0" prefWidth="196.0" text="All users" textFill="#fafafc">
                                  <padding>
                                     <Insets bottom="9.0" left="20.0" right="20.0" top="4.0" />
                                  </padding>
@@ -67,7 +67,7 @@
                                     <Font name="Hiragino Kaku Gothic StdN W8" size="14.0" />
                                  </font>
                               </Label>
-                              <ListView fx:id="userList" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Transparent;" />
+                              <ListView fx:id="userList" maxWidth="196.0" prefHeight="200.0" prefWidth="196.0" />
                            </children>
                         </VBox>
                      </children>
@@ -79,19 +79,19 @@
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" style="-fx-background-color: #34374d;" GridPane.rowIndex="2">
          <children>
             <Button fx:id="createRoomButton" mnemonicParsing="false" style="-fx-background-color: #54577c; -fx-background-radius: 6;" text="Create Room" textFill="#fafafc" />
-            <Button fx:id="quitButton" mnemonicParsing="false" style="-fx-background-color: #54577c; -fx-background-radius: 6;" text="Quit" textFill="#fafafc" />
+            <Button fx:id="quitButton" mnemonicParsing="false" onAction="#handleQuit" style="-fx-background-color: #54577c; -fx-background-radius: 6;" text="Quit" textFill="#fafafc" />
          </children>
       </HBox>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #54577c;" GridPane.columnIndex="1">
          <children>
-            <Label fx:id="roomNameLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="560.0" text="RoomName" textAlignment="CENTER" textFill="#fafafc">
+            <Label fx:id="roomNameLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="560.0" text="Select a user to start chatting" textAlignment="CENTER" textFill="#fafafc">
                <font>
                   <Font name="Hiragino Kaku Gothic StdN W8" size="14.0" />
                </font>
             </Label>
-            <Label fx:id="descriptionLabel" alignment="CENTER" prefHeight="25.0" prefWidth="560.0" text="description" textFill="#fafafc">
+            <Label fx:id="descriptionLabel" alignment="CENTER" prefHeight="20.0" prefWidth="560.0" textFill="#fafafc">
                <font>
-                  <Font name="Hiragino Kaku Gothic StdN W8" size="12.0" />
+                  <Font name="Helvetica Neue" size="12.0" />
                </font>
             </Label>
          </children>
@@ -99,7 +99,7 @@
       <ListView fx:id="messageList" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #34374D;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #54577c;" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <children>
-            <TextArea fx:id="messageArea" minHeight="0.0" minWidth="0.0" prefHeight="26.0" prefWidth="540.0" promptText="Type a message">
+            <TextArea fx:id="messageArea" disable="true" minHeight="0.0" minWidth="0.0" onKeyPressed="#handleTyped" prefHeight="26.0" prefWidth="540.0" promptText="Type a message">
                <VBox.margin>
                   <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
                </VBox.margin>

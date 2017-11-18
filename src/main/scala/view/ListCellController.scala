@@ -1,25 +1,26 @@
 import scalafx.event.ActionEvent
+import scalafx.scene.layout.{HBox}
 import scalafx.scene.input.{MouseEvent, MouseButton}
 import scalafx.scene.control.{Label, MenuItem}
 import scalafx.beans.property.StringProperty
 import scalafxml.core.macros.sfxml
-import javafx.beans.property.SimpleIntegerProperty;
+import scalafx.scene.shape.Circle
 
 @sfxml
 class ListCellController(
+  private val hbox: HBox,
+  private val onlineStatusCircle: Circle,
   private val name: Label,
-  private val kickMenuItem: MenuItem,
   private val unreadNumber: Label
 ) {
-
   private var _room: Option[Room] = None
-  private var _unread = 0
 
   def room = _room
   def room_=(room: Room) {
     _room = Some(room)
     name.text = room.name
   }
+
   def handleShowChat(action: MouseEvent) {
     import Node._
     if (action.button == MouseButton.Primary) {
@@ -27,11 +28,9 @@ class ListCellController(
     }
     hideUnread()
   }
-  def unread = _unread
-  def unread_=(number: Int){
+  def showUnread(number: Int){
     if(number > 0) {
-      _unread = number
-      unreadNumber.text = _unread.toString()
+      unreadNumber.text = number.toString()
       unreadNumber.opacity = 1
     } else {
       hideUnread()
@@ -39,12 +38,7 @@ class ListCellController(
   }
 
   def hideUnread(){
-    _unread = 0
-    unreadNumber.text = _unread.toString()
+    unreadNumber.text = 0.toString()
     unreadNumber.opacity = 0
   }
-
-  def kick(action: ActionEvent) {
-  }
-
 }

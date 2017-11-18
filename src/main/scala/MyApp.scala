@@ -33,21 +33,21 @@ object MyApp extends JFXApp {
   val joinScreenLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
   joinScreenLoader.load(joinScreenFXML)
   val joinScreen = joinScreenLoader.getRoot[javafx.scene.layout.GridPane]
-  val joinScreenController = joinScreenLoader.getController[JoinScreenController#Controller]()
+  var joinScreenController = joinScreenLoader.getController[JoinScreenController#Controller]()
 
   // Initialize Main UI
   val mainFXML = getClass.getResourceAsStream("MainUI.fxml")
   val mainLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
   mainLoader.load(mainFXML)
   val main = mainLoader.getRoot[javafx.scene.layout.GridPane]
-  val mainController = mainLoader.getController[MainController#Controller]()
+  var mainController = mainLoader.getController[MainController#Controller]()
 
   // Initialize ChatRoom UI
-  val chatLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
-  val chatRoomFXML = getClass.getResourceAsStream("Version 1/ChatRoomUI.fxml")
-  chatLoader.load(chatRoomFXML)
-  val chatRoomUI = chatLoader.getRoot[javafx.scene.layout.AnchorPane]
-  val chatController = chatLoader.getController[ChatRoomController#Controller]
+  // val chatLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
+  // val chatRoomFXML = getClass.getResourceAsStream("Version 1/ChatRoomUI.fxml")
+  // chatLoader.load(chatRoomFXML)
+  // val chatRoomUI = chatLoader.getRoot[javafx.scene.layout.AnchorPane]
+  // val chatController = chatLoader.getController[ChatRoomController#Controller]
 
   // Initialize Stage
   stage = new PrimaryStage() {
@@ -88,21 +88,6 @@ object MyApp extends JFXApp {
     }.showAndWait
   }
 
-  def showAbout(){
-    val aboutLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
-    val aboutFXML = getClass.getResourceAsStream("About.fxml")
-    aboutLoader.load(aboutFXML)
-    val aboutUI = aboutLoader.getRoot[javafx.scene.layout.Pane]
-    val dialog = new Stage() {
-      initModality(Modality.APPLICATION_MODAL)
-      initOwner(stage)
-      title = "About"
-      scene = new Scene {
-        root = aboutUI
-      }
-    }
-    dialog.showAndWait()
-  }
   def showMain(){
     stage = new PrimaryStage() {
       scene = new Scene() {

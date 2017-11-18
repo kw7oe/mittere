@@ -8,6 +8,10 @@ import scalafx.scene.input.{KeyEvent, KeyCode}
 import scalafxml.core.macros.sfxml
 import scala.collection.mutable.ArrayBuffer
 import scalafx.collections.ObservableBuffer
+import scalafx.application.Platform
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scalafx.geometry.Pos
 
 @sfxml
 class MainController(
@@ -23,24 +27,27 @@ class MainController(
 ) {
 
   var userListItems: ObservableBuffer[Room] = new ObservableBuffer[Room]()
-  var chatRoomListItems: ObservableBuffer[Room] = new ObservableBuffer[Room]()
+  var roomListItems: ObservableBuffer[Room] = new ObservableBuffer[Room]()
+  var messages: ObservableBuffer[Room.Message] = new ObservableBuffer[Room.Message]()
+  private var _room: Option[Room] = None
+  private var username: Option[String] = None
+  final var shouldListenToTyping = true
+
   setupUserListCell()
   setupRoomListCell()
+  setupMessageListCell()
+  messageList.items = messages
   userList.items = userListItems
-  roomList.items = chatRoomListItems
+  roomList.items = roomListItems
 
   val usernameBlankErrorMessage = (
     "Input Expected",
     "Username is required.",
     "Please ensure the username is not blank."
   )
-  
-  //menu item
-  def handleClose(action: ActionEvent){
+ 
+  def handleQuit(action: ActionEvent){
     System.exit(0)
-  }
-  def showAbout(action: ActionEvent){
-    MyApp.showAbout()
   }
 
   def handleCreateChatRoom(action: ActionEvent) {
@@ -49,24 +56,21 @@ class MainController(
   }
 
   def initialize(userEntries: Map[String, Room], 
-                 roomEntries: Map[String, Room]) {
+                 roomEntries: Map[String, Room],
+                 username: String) {
     val users = Room(userEntries)
     userListItems.appendAll(users) 
     val rooms = Room(roomEntries)
-    chatRoomListItems.appendAll(rooms)
+    roomListItems.appendAll(rooms)
+    this.username = Some(username)
   }
 
-
-  def showMain() {
-    MyApp.showMain()
+  def addChatroom(room: Room) {
+    roomListItems += room
   }
 
-  def showNewChatRoom(room: Room) {
-    chatRoomListItems += room
-  }
-
-  def removeChatRoom(room: Room) {
-    chatRoomListItems -= room
+  def removeChatroom(room: Room) {
+    roomListItems -= room
   }
 
   def showJoin(name: Room) {
@@ -77,45 +81,59 @@ class MainController(
     userListItems -= name
   }
 
-  def showChatRoom {  
-    // borderPane.center = MyApp.chatRoomUI
+  def room: Option[Room] = _room
+  def room_=(room: Room) {
+    _room = Some(room)
+    roomNameLabel.text = _room.get.name
+  }
+  
+  def showRoom(room: Room, messages: ArrayBuffer[Room.Message]) {
+    this.room = room
+    this.messages = messages
+    room.chatRoomType match {
+      case Personal =>
+        this.descriptionLabel.text = "online"
+        this.messageArea.disable = false
+      case Group=>
+        var users = room.users.toArray
+        var description = users.mkString(", ")
+        this.descriptionLabel.text = description
+    } 
   }
 
-  def showUnread(from: String, roomType: String){
+  def showUnread(room: Room){
     //tell list cell to show unread
     println("Showing unread")
-
-    if(roomType == "personal"){
-      for(userCell <- userListItems.toArray){
-        if(userCell.name == from){
-          userCell.unreadNumber += 1
-          setupUserListCell()
+    room.chatRoomType match {
+      case Personal =>
+        for(userCell <- userListItems.toArray){
+          if(userCell.identifier == room.identifier){
+            userCell.unreadNumber += 1
+            setupUserListCell()
+          }
         }
-      }
-    }else if (roomType == "group"){
-      for(chatRoom <- chatRoomListItems.toArray){
-        if(chatRoom.name == from){
-          chatRoom.unreadNumber += 1
-          setupRoomListCell()
+      case Group =>
+        for(chatroom <- roomListItems.toArray){
+          if(chatroom.identifier == room.identifier){
+            chatroom.unreadNumber += 1
+            setupRoomListCell()
+          }
         }
-      }
-    } 
+    }
   }
 
   def hideUnread(room: Room){
     room.chatRoomType match {
         case Group =>
-          for(chatRoom <- chatRoomListItems.toArray){
-            if(chatRoom.name == room.identifier){
-              chatRoom.unreadNumber = 0
-              setupRoomListCell()
+          for(chatroom <- roomListItems.toArray){
+            if(chatroom.identifier == room.identifier){
+              chatroom.unreadNumber = 0
             }
           }
         case Personal =>
-          for(userCell <- userListItems.toArray){
-            if(userCell.name == room.identifier){
-              userCell.unreadNumber = 0
-              setupUserListCell()
+          for(chatroom <- userListItems.toArray){
+            if(chatroom.identifier == room.identifier){
+              chatroom.unreadNumber = 0
             }
           }
       }
@@ -135,7 +153,7 @@ class MainController(
             val controller = loader.getController[ListCellController#Controller]
 
             controller.room = room.value
-            controller.unread = room.value.unreadNumber
+            controller.showUnread(room.value.unreadNumber)
             graphic = root
           }
         }}
@@ -157,11 +175,109 @@ class MainController(
             val controller = loader.getController[ListCellController#Controller]
 
             controller.room = room.value
-            controller.unread = room.value.unreadNumber
+            controller.showUnread(room.value.unreadNumber)
             graphic = root
           }
         }}
       }
     }
+  }
+  private def setupMessageListCell() {
+    messageList.cellFactory = { _ => 
+      new ListCell[Room.Message]() { cell =>
+        item.onChange { (message, oldValue, newValue) => {
+          if (newValue == null) {
+            graphic = null
+          } else {
+            room.get.chatRoomType match {
+              case Personal =>
+                val loader = new FXMLLoader(null, NoDependencyResolver)
+                val resource = getClass.getResourceAsStream("CustomMessageCell.fxml")
+                loader.load(resource)
+                val root = loader.getRoot[javafx.scene.layout.HBox]
+                val controller = loader.getController[MessageController#Controller]
+
+                if(message.value.from == username.get){
+                  println("from me")
+                  controller.setAlign(Pos.CenterRight)
+                }else{
+                  controller.setAlign(Pos.CenterLeft)
+                }
+                controller.setMessage(message.value.value)
+                graphic = root
+              case Group =>
+                val loader = new FXMLLoader(null, NoDependencyResolver)
+                val resource = getClass.getResourceAsStream("CustomMessageCell.fxml")
+                loader.load(resource)
+                val root = loader.getRoot[javafx.scene.layout.HBox]
+                val controller = loader.getController[MessageController#Controller]
+
+                controller.setMessage(message.value.value)
+                graphic = root
+            }
+            
+          }
+        }}
+      }
+    }
+  }
+
+  // chatroom controller
+  def messages_=(messages: ArrayBuffer[Room.Message]) {
+    this.messages = ObservableBuffer(messages)
+    messageList.items = this.messages
+  }
+
+  def handleSend() {
+    import Node._
+    room match {
+      case Some(c) => 
+        MyApp.clientActor ! RequestToSendMessage(c, messageArea.text.value)
+      case None => // Do Nothing
+    }
+  }
+
+  def handleTyped(action: KeyEvent) {
+    import Node._
+
+    if (action.code == KeyCode.ENTER && action.shiftDown) {
+      messageArea.appendText("\n")
+    } else if (action.code == KeyCode.ENTER) {
+      action.consume()
+      handleSend()
+      messageArea.text.value = ""
+    }
+
+    if (shouldListenToTyping) {
+      // Should let it crash if room is empty
+      // As it should be technically impossible to 
+      // have access to ChatRoomController without
+      // room
+      MyApp.clientActor ! Typing(room.get)      
+      shouldListenToTyping = false
+      val task = new Runnable { 
+        def run() { 
+          shouldListenToTyping = true
+        } 
+      }
+      MyApp.scheduler.scheduleOnce(5 second, task)
+    }
+
+  }
+
+  def showStatus(name: String) {
+    descriptionLabel.text = name + " is typing"
+    val task = new Runnable {
+      def run() { 
+        Platform.runLater {
+          descriptionLabel.text = ""
+        }
+      } 
+    }
+    MyApp.scheduler.scheduleOnce(5 second, task)
+  }
+
+  def addMessage(message: Room.Message) {
+    messages += message
   }
 }
