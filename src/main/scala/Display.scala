@@ -33,8 +33,9 @@ class Display extends Actor with ActorLogging {
   def receive: Receive = {
     case Initialize(users, rooms) =>
       Platform.runLater {
+        //after user joined, setup
         MyApp.mainController.initialize(users, rooms)
-        MyApp.mainController.clearJoin()
+        MyApp.mainController.showMain()
       }
 
     case ShowAlert(title, headerText, contentText) => {

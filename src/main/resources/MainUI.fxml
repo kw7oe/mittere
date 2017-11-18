@@ -1,124 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" onKeyPressed="#handleKeyBoard" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleClose" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#showAbout" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </top>
-   <center>
-      <AnchorPane prefHeight="432.0" prefWidth="599.0" BorderPane.alignment="CENTER">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #34374d;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="600.0" prefWidth="600.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="85.0" minHeight="85.0" prefHeight="85.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="449.0" prefHeight="449.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="66.0" minHeight="66.0" prefHeight="66.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <AnchorPane>
          <children>
-            <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <columnConstraints>
-                <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <GridPane alignment="CENTER" prefHeight="120.0" prefWidth="400.0">
-                    <columnConstraints>
-                      <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <Label prefHeight="64.0" prefWidth="187.0" text="Mittere">
-                           <font>
-                              <Font name="Futura Bold" size="48.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </GridPane>
-                  <GridPane prefHeight="113.0" prefWidth="325.0" GridPane.rowIndex="1">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <TextField fx:id="server" text="127.0.0.1" GridPane.columnIndex="1" />
-                        <Label text="Server" />
-                        <TextField fx:id="port" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Port" GridPane.rowIndex="1" />
-                        <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="Username" GridPane.rowIndex="2" />
-                        <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                     </children>
-                  </GridPane>
-                  <GridPane prefHeight="67.0" prefWidth="400.0" GridPane.rowIndex="2">
-                    <columnConstraints>
-                      <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <Button fx:id="joinButton" mnemonicParsing="false" onAction="#handleJoin" prefHeight="27.0" prefWidth="72.0" text="Join" />
-                     </children>
-                  </GridPane>
-               </children>
-            </GridPane>
+            <Label alignment="CENTER" style="-fx-background-color: #34374d;" text="Mittere" textFill="#fafafc" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <font>
+                  <Font name="Hiragino Kaku Gothic StdN W8" size="24.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
-   </center>
-   <left>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab text="Online Users">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+      <AnchorPane style="-fx-background-color: #54577c;" GridPane.hgrow="NEVER" GridPane.rowIndex="1">
+         <children>
+            <ScrollPane fitToWidth="true" minHeight="449.0" minWidth="200.0" prefHeight="449.0" prefWidth="200.0" style="-fx-background: #54577c; -fx-border-color: #54577c;">
+               <content>
+                  <VBox prefHeight="432.0" prefWidth="198.0" style="-fx-background-color: #54577c;">
                      <children>
-                        <ListView fx:id="userList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <VBox>
+                           <children>
+                              <Label text="Rooms" textFill="#fafafc">
+                                 <font>
+                                    <Font name="Hiragino Kaku Gothic StdN W8" size="14.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets bottom="9.0" left="20.0" right="20.0" top="10.0" />
+                                 </padding>
+                              </Label>
+                              <ListView fx:id="roomList" prefHeight="170.0" prefWidth="200.0" style="-fx-background-color: Transparent;">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </ListView>
+                           </children>
+                        </VBox>
+                        <VBox>
+                           <children>
+                              <Label text="All users" textFill="#fafafc">
+                                 <padding>
+                                    <Insets bottom="9.0" left="20.0" right="20.0" top="4.0" />
+                                 </padding>
+                                 <font>
+                                    <Font name="Hiragino Kaku Gothic StdN W8" size="14.0" />
+                                 </font>
+                              </Label>
+                              <ListView fx:id="userList" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Transparent;" />
+                           </children>
+                        </VBox>
                      </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-          <Tab text="Chat Room">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="chatRoomList" prefHeight="297.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                        <Button layoutX="35.0" layoutY="297.0" mnemonicParsing="false" onAction="#handleCreateChatRoom" text="Create Chat Room" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="34.0" />
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-        </tabs>
-      </TabPane>
-   </left>
-</BorderPane>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </children>
+      </AnchorPane>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" style="-fx-background-color: #34374d;" GridPane.rowIndex="2">
+         <children>
+            <Button fx:id="createRoomButton" mnemonicParsing="false" style="-fx-background-color: #54577c; -fx-background-radius: 6;" text="Create Room" textFill="#fafafc" />
+            <Button fx:id="quitButton" mnemonicParsing="false" style="-fx-background-color: #54577c; -fx-background-radius: 6;" text="Quit" textFill="#fafafc" />
+         </children>
+      </HBox>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #54577c;" GridPane.columnIndex="1">
+         <children>
+            <Label fx:id="roomNameLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="560.0" text="RoomName" textAlignment="CENTER" textFill="#fafafc">
+               <font>
+                  <Font name="Hiragino Kaku Gothic StdN W8" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="descriptionLabel" alignment="CENTER" prefHeight="25.0" prefWidth="560.0" text="description" textFill="#fafafc">
+               <font>
+                  <Font name="Hiragino Kaku Gothic StdN W8" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <ListView fx:id="messageList" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #34374D;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #54577c;" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <children>
+            <TextArea fx:id="messageArea" minHeight="0.0" minWidth="0.0" prefHeight="26.0" prefWidth="540.0" promptText="Type a message">
+               <VBox.margin>
+                  <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="Helvetica Neue" size="11.0" />
+               </font>
+            </TextArea>
+         </children>
+      </VBox>
+   </children>
+</GridPane>

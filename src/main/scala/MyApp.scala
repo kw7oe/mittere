@@ -28,6 +28,13 @@ object MyApp extends JFXApp {
   val clientActor = system.actorOf(Props[Client], "client")
   val displayActor = system.actorOf(Props[Display], "display")
 
+  // Initialize Join Screen
+  val joinScreenFXML = getClass.getResourceAsStream("JoinScreenController.fxml")
+  val joinScreenLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
+  joinScreenLoader.load(joinScreenFXML)
+  val joinScreen = joinScreenLoader.getRoot[javafx.scene.layout.GridPane]
+  val joinScreenController = joinScreenLoader.getController[JoinScreenController#Controller]()
+
   // Initialize Main UI
   val mainFXML = getClass.getResourceAsStream("MainUI.fxml")
   val mainLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
@@ -35,16 +42,17 @@ object MyApp extends JFXApp {
   val main = mainLoader.getRoot[javafx.scene.layout.BorderPane]
   val mainController = mainLoader.getController[MainController#Controller]()
 
-  // Initialize ChatRoom UI
-  val chatLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
-  val chatRoomFXML = getClass.getResourceAsStream("ChatRoomUI.fxml")
-  chatLoader.load(chatRoomFXML)
-  val chatRoomUI = chatLoader.getRoot[javafx.scene.layout.AnchorPane]
-  val chatController = chatLoader.getController[ChatRoomController#Controller]
+  // // Initialize ChatRoom UI
+  // val chatLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
+  // val chatRoomFXML = getClass.getResourceAsStream("ChatRoomUI.fxml")
+  // chatLoader.load(chatRoomFXML)
+  // val chatRoomUI = chatLoader.getRoot[javafx.scene.layout.AnchorPane]
+  // val chatController = chatLoader.getController[ChatRoomController#Controller]
+
   // Initialize Stage
   stage = new PrimaryStage() {
     scene = new Scene() {
-      root = main
+      root = joinScreen
     }
   }
 
@@ -52,25 +60,25 @@ object MyApp extends JFXApp {
     system.terminate
   }
 
-  def showCreateChatRoomDialog(room: Room) : Boolean = {
-    val resource = getClass.getResourceAsStream("CreateChatRoomDialog.fxml")
-    val loader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
-    loader.load(resource)
-    val root2 = loader.getRoot[javafx.scene.layout.AnchorPane]
-    val controller = loader.getController[CreateChatRoomDialogController#Controller]
-    val dialog = new Stage() {
-      initModality(Modality.APPLICATION_MODAL)
-      initOwner(stage)
-      title = "Create Chat Room"
-      scene = new Scene {
-        root = root2
-      }
-    }
-    controller.dialogStage = dialog
-    controller.room = room
-    dialog.showAndWait();
-    return controller.okClicked;
-  }
+  // def showCreateChatRoomDialog(room: Room) : Boolean = {
+  //   val resource = getClass.getResourceAsStream("CreateChatRoomDialog.fxml")
+  //   val loader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
+  //   loader.load(resource)
+  //   val root2 = loader.getRoot[javafx.scene.layout.AnchorPane]
+  //   val controller = loader.getController[CreateChatRoomDialogController#Controller]
+  //   val dialog = new Stage() {
+  //     initModality(Modality.APPLICATION_MODAL)
+  //     initOwner(stage)
+  //     title = "Create Chat Room"
+  //     scene = new Scene {
+  //       root = root2
+  //     }
+  //   }
+  //   controller.dialogStage = dialog
+  //   controller.room = room
+  //   dialog.showAndWait();
+  //   return controller.okClicked;
+  // }
 
   def showAlert(_title: String,
                 _headerText: String,
@@ -97,6 +105,9 @@ object MyApp extends JFXApp {
       }
     }
     dialog.showAndWait()
+  }
+  def showMain(){
+    stage = main
   }
 
   // Set Config with specified IP address
