@@ -11,23 +11,30 @@ import scalafx.collections.ObservableBuffer
 
 @sfxml
 class MainController(
-  private val userList: ListView[Chattable],
-  private val roomList: ListView[Chattable],
+  private val userList: ListView[Room],
+  private val chatRoomList: ListView[Room],
   private val createRoomButton: Button,
   private val quitButton: Button,
   private val roomNameLabel: Label,
   private val descriptionLabel: Label,
   private val messageList: ListView[Messages],
   private val messageArea: TextArea
+
 ) {
 
-  var userListItems: ObservableBuffer[User] = new ObservableBuffer[User]()
+  var userListItems: ObservableBuffer[Room] = new ObservableBuffer[Room]()
   var chatRoomListItems: ObservableBuffer[Room] = new ObservableBuffer[Room]()
   setupUserListCell()
   setupRoomListCell()
   userList.items = userListItems
   chatRoomList.items = chatRoomListItems
 
+  val usernameBlankErrorMessage = (
+    "Input Expected",
+    "Username is required.",
+    "Please ensure the username is not blank."
+  )
+  
   //menu item
   def handleClose(action: ActionEvent){
     System.exit(0)
@@ -37,25 +44,17 @@ class MainController(
   }
 
   def handleJoin() {
-    import Client._
+    import Node._
     if (username.text.value.length == 0) {
-      MyApp.showAlert(
-       _title =  "Input Expected",
-       _headerText = "Username is required.",
-       _contentText = "Please ensure the username is not blank."
-      )
+      MyApp.showAlert(usernameBlankErrorMessage)
     } else {
       MyApp.clientActor ! RequestToJoin(server.text.value, port.text.value, username.text.value)
     }
   }
 
   def handleCreateChatRoom(action: ActionEvent) {
-    import Client._
-    val tempRoom = Room(null, new ArrayBuffer[Room.Message](), null)
-    val okClicked = MyApp.showCreateChatRoomDialog(tempRoom)
-    if (okClicked) {
-      MyApp.clientActor ! RequestToCreateChatRoom(tempRoom)
-    }
+    import Node._
+    MyApp.showCreateChatRoomDialog()
   }
 
   def handleKeyBoard(action: KeyEvent) {
@@ -64,9 +63,9 @@ class MainController(
     }
   }
 
-  def initialize(userEntries: Map[String, ActorRef], 
+  def initialize(userEntries: Map[String, Room], 
                  roomEntries: Map[String, Room]) {
-    val users = User(userEntries)
+    val users = Room(userEntries)
     userListItems.appendAll(users) 
     val rooms = Room(roomEntries)
     chatRoomListItems.appendAll(rooms)
@@ -85,11 +84,11 @@ class MainController(
     chatRoomListItems -= room
   }
 
-  def showJoin(name: User) {
+  def showJoin(name: Room) {
     userListItems += name
   }
 
-  def removeJoin(name: User) {
+  def removeJoin(name: Room) {
     userListItems -= name
   }
 
@@ -100,6 +99,7 @@ class MainController(
   def showUnread(from: String, roomType: String){
     //tell list cell to show unread
     println("Showing unread")
+
     if(roomType == "personal"){
       for(userCell <- userListItems.toArray){
         if(userCell.username == from){
@@ -116,6 +116,7 @@ class MainController(
       }
     } 
   }
+
   def hideUnread(chattable: Chattable){
     chattable.chattableType match {
         case Group =>
@@ -137,8 +138,8 @@ class MainController(
   // Customize the ListCell in the List View
   private def setupUserListCell() {
     userList.cellFactory = { _ => 
-      new ListCell[User]() {
-        item.onChange { (user, oldValue, newValue) => {
+      new ListCell[Room]() {
+        item.onChange { (room, oldValue, newValue) => {
           if (newValue == null) {
             graphic = null
           } else {
@@ -148,8 +149,8 @@ class MainController(
             val root = loader.getRoot[javafx.scene.layout.AnchorPane]
             val controller = loader.getController[ListCellController#Controller]
 
-            controller.chattable = user.value
-            controller.unread = user.value.unreadNumber
+            controller.room = room.value
+            controller.unread = room.value.unreadNumber
             graphic = root
           }
         }}
@@ -170,7 +171,7 @@ class MainController(
             val root = loader.getRoot[javafx.scene.layout.AnchorPane]
             val controller = loader.getController[ListCellController#Controller]
 
-            controller.chattable = room.value
+            controller.room = room.value
             controller.unread = room.value.unreadNumber
             graphic = root
           }

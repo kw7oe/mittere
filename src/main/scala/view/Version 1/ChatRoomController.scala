@@ -19,7 +19,7 @@ class ChatRoomController(
 ) {
 
   var messages: ObservableBuffer[String] = new ObservableBuffer[String]()
-  private var _chattable: Option[Chattable] = None
+  private var _room: Option[Room] = None
   final var shouldListenToTyping = true
   messageList.items = messages
 
@@ -28,22 +28,22 @@ class ChatRoomController(
     messageList.items = this.messages
   }
 
-  def chattable = _chattable
-  def chattable_=(chattable: Chattable) {
-    _chattable = Some(chattable)
-    usernameLabel.text = _chattable.get.key
+  def room = _room
+  def room_=(room: Room) {
+    _room = Some(room)
+    usernameLabel.text = _room.get.name
   }
 
   // Reinitialize the state of the chat room
-  def initialize(chattable: Chattable, messages: ArrayBuffer[Room.Message]) {
-    this.chattable = chattable
+  def initialize(room: Room, messages: ArrayBuffer[Room.Message]) {
+    this.room = room
     this.messages = messages
     this.typingLabel.text = ""
   }
 
   def handleSend(messages: String) {
-    import Client._
-    chattable match {
+    import Node._
+    room match {
       case Some(c) => 
         MyApp.clientActor ! RequestToSendMessage(c, textArea.text.value)
       case None => // Do Nothing
@@ -51,7 +51,7 @@ class ChatRoomController(
   }
 
   def handleTyped(action: KeyEvent) {
-    import Client._
+    import Node._
 
     if (action.code == KeyCode.ENTER && action.shiftDown) {
       textArea.appendText("\n")
@@ -62,11 +62,11 @@ class ChatRoomController(
     }
 
     if (shouldListenToTyping) {
-      // Should let it crash if chattable is empty
+      // Should let it crash if room is empty
       // As it should be technically impossible to 
       // have access to ChatRoomController without
-      // chattable
-      MyApp.clientActor ! Typing(chattable.get)      
+      // room
+      MyApp.clientActor ! Typing(room.get)      
       shouldListenToTyping = false
       val task = new Runnable { 
         def run() { 

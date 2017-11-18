@@ -25,7 +25,7 @@ object MyApp extends JFXApp {
 
   // Initialize Actor
   val serverActor = system.actorOf(Props[Server], "server")
-  val clientActor = system.actorOf(Props[Client], "client")
+  val clientActor = system.actorOf(Props[Node], "client")
   val displayActor = system.actorOf(Props[Display], "display")
 
   // Initialize Join Screen
@@ -60,7 +60,7 @@ object MyApp extends JFXApp {
     system.terminate
   }
 
-  // def showCreateChatRoomDialog(room: Room) : Boolean = {
+  // def showCreateChatRoomDialog() {
   //   val resource = getClass.getResourceAsStream("CreateChatRoomDialog.fxml")
   //   val loader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
   //   loader.load(resource)
@@ -75,19 +75,16 @@ object MyApp extends JFXApp {
   //     }
   //   }
   //   controller.dialogStage = dialog
-  //   controller.room = room
   //   dialog.showAndWait();
-  //   return controller.okClicked;
   // }
 
-  def showAlert(_title: String,
-                _headerText: String,
-                _contentText: String) : Unit = {
+
+  def showAlert(tuple: Tuple3[String, String, String]) : Unit = {
     val alert = new Alert(AlertType.Warning) {
       initOwner(stage)
-      title       = _title
-      headerText  = _headerText
-      contentText = _contentText
+      title       = tuple._1
+      headerText  = tuple._2
+      contentText = tuple._3
     }.showAndWait
   }
 

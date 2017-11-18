@@ -12,18 +12,18 @@ class ListCellController(
   private val unreadNumber: Label
 ) {
 
-  private var _chattable: Option[Chattable] = None
+  private var _room: Option[Room] = None
   private var _unread = 0
 
-  def chattable = _chattable
-  def chattable_=(chattable: Chattable) {
-    _chattable = Some(chattable)
-    label.text = chattable.key
+  def room = _room
+  def room_=(room: Room) {
+    _room = Some(room)
+    label.text = room.name
   }
   def handleShowChat(action: MouseEvent) {
-    import Client._
+    import Node._
     if (action.button == MouseButton.Primary) {
-      MyApp.clientActor ! RequestToChatWith(chattable.get)
+      MyApp.clientActor ! RequestToChatWith(room.get)
     }
     hideUnread()
   }
