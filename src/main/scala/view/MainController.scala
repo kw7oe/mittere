@@ -3,7 +3,6 @@ import akka.actor.ActorRef
 import scalafxml.core.{FXMLLoader, NoDependencyResolver}
 import scalafx.Includes._
 import scalafx.scene.control.{Button, Label, TextArea, ListView, ListCell}
-import scalafx.scene.layout.HBox
 import scalafx.scene.input.{KeyEvent, KeyCode}
 import scalafxml.core.macros.sfxml
 import scala.collection.mutable.ArrayBuffer
@@ -50,9 +49,9 @@ class MainController(
     System.exit(0)
   }
 
-  def handleCreateChatRoom(action: ActionEvent) {
+  def createRoom(action: ActionEvent) {
     import Node._
-    // MyApp.showCreateChatRoomDialog()
+    MyApp.showCreateChatRoomDialog()
   }
 
   def initialize(userEntries: Map[String, Room], 
@@ -95,15 +94,18 @@ class MainController(
         this.descriptionLabel.text = "online"
         this.messageArea.disable = false
       case Group=>
-        var users = room.users.toArray
-        var description = users.mkString(", ")
+        var usernames = new ArrayBuffer[String]
+        userListItems.foreach { room => 
+          usernames.append(room.name)
+        }
+        var description = usernames.mkString(" · ")
         this.descriptionLabel.text = description
-    } 
+        this.messageArea.disable = false
+    }
   }
 
   def showUnread(room: Room){
     //tell list cell to show unread
-    println("Showing unread")
     room.chatRoomType match {
       case Personal =>
         for(userCell <- userListItems.toArray){
@@ -176,6 +178,7 @@ class MainController(
 
             controller.room = room.value
             controller.showUnread(room.value.unreadNumber)
+            controller.hideCircle()
             graphic = root
           }
         }}
@@ -198,22 +201,34 @@ class MainController(
                 val controller = loader.getController[MessageController#Controller]
 
                 if(message.value.from == username.get){
-                  println("from me")
                   controller.setAlign(Pos.CenterRight)
                 }else{
                   controller.setAlign(Pos.CenterLeft)
                 }
                 controller.setMessage(message.value.value)
                 graphic = root
+                
               case Group =>
-                val loader = new FXMLLoader(null, NoDependencyResolver)
-                val resource = getClass.getResourceAsStream("CustomMessageCell.fxml")
-                loader.load(resource)
-                val root = loader.getRoot[javafx.scene.layout.HBox]
-                val controller = loader.getController[MessageController#Controller]
-
-                controller.setMessage(message.value.value)
-                graphic = root
+                if(message.value.from == username.get){
+                  val loader = new FXMLLoader(null, NoDependencyResolver)
+                  val resource = getClass.getResourceAsStream("CustomMessageCell.fxml")
+                  loader.load(resource)
+                  val root = loader.getRoot[javafx.scene.layout.HBox]
+                  val controller = loader.getController[MessageController#Controller]
+                  controller.setAlign(Pos.CenterRight)
+                  controller.setMessage(message.value.value)
+                  graphic = root
+                }else{
+                  val loader = new FXMLLoader(null, NoDependencyResolver)
+                  val resource = getClass.getResourceAsStream("RoomMessageCell.fxml")
+                  loader.load(resource)
+                  val root = loader.getRoot[javafx.scene.layout.HBox]
+                  val controller = loader.getController[RoomMessageController#Controller]
+                  controller.setMessage(message.value.value)
+                  controller.setSender(message.value.from)
+                  graphic = root
+                }
+                
             }
             
           }

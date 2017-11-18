@@ -5,6 +5,7 @@ import scalafx.scene.control.{Label, MenuItem}
 import scalafx.beans.property.StringProperty
 import scalafxml.core.macros.sfxml
 import scalafx.scene.shape.Circle
+import scalafx.Includes._
 
 @sfxml
 class ListCellController(
@@ -36,7 +37,9 @@ class ListCellController(
       hideUnread()
     }
   }
-
+  def hideCircle(){
+    hbox.getChildren().remove(onlineStatusCircle)
+  }
   def hideUnread(){
     unreadNumber.text = 0.toString()
     unreadNumber.opacity = 0

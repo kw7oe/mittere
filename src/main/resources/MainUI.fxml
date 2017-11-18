@@ -78,7 +78,7 @@
       </AnchorPane>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" style="-fx-background-color: #34374d;" GridPane.rowIndex="2">
          <children>
-            <Button fx:id="createRoomButton" mnemonicParsing="false" style="-fx-background-color: #54577c; -fx-background-radius: 6;" text="Create Room" textFill="#fafafc" />
+            <Button fx:id="createRoomButton" mnemonicParsing="false" onAction="#createRoom" style="-fx-background-color: #54577c; -fx-background-radius: 6;" text="Create Room" textFill="#fafafc" />
             <Button fx:id="quitButton" mnemonicParsing="false" onAction="#handleQuit" style="-fx-background-color: #54577c; -fx-background-radius: 6;" text="Quit" textFill="#fafafc" />
          </children>
       </HBox>

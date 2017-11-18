@@ -60,23 +60,23 @@ object MyApp extends JFXApp {
     system.terminate
   }
 
-  // def showCreateChatRoomDialog() {
-  //   val resource = getClass.getResourceAsStream("CreateChatRoomDialog.fxml")
-  //   val loader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
-  //   loader.load(resource)
-  //   val root2 = loader.getRoot[javafx.scene.layout.AnchorPane]
-  //   val controller = loader.getController[CreateChatRoomDialogController#Controller]
-  //   val dialog = new Stage() {
-  //     initModality(Modality.APPLICATION_MODAL)
-  //     initOwner(stage)
-  //     title = "Create Chat Room"
-  //     scene = new Scene {
-  //       root = root2
-  //     }
-  //   }
-  //   controller.dialogStage = dialog
-  //   dialog.showAndWait();
-  // }
+  def showCreateChatRoomDialog() {
+    val resource = getClass.getResourceAsStream("CreateChatRoomDialog.fxml")
+    val loader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
+    loader.load(resource)
+    val root2 = loader.getRoot[javafx.scene.layout.GridPane]
+    val controller = loader.getController[CreateChatRoomDialogController#Controller]
+    val dialog = new Stage() {
+      initModality(Modality.APPLICATION_MODAL)
+      initOwner(stage)
+      title = "Create Chat Room"
+      scene = new Scene {
+        root = root2
+      }
+    }
+    controller.dialogStage = dialog
+    dialog.showAndWait();
+  }
 
 
   def showAlert(tuple: Tuple3[String, String, String]) : Unit = {

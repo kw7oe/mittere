@@ -4,8 +4,8 @@ import scalafxml.core.macros.sfxml
 import scalafx.geometry.Pos
 
 @sfxml
-class MessageController(
-  private val hbox: HBox,
+class RoomMessageController(
+  private val nameLabel: Label,
   private val messageLabel: Label
 ) {
 //   private var _message: Option[String] = None
@@ -18,12 +18,7 @@ class MessageController(
     def setMessage(message: String){
         messageLabel.text = message
     }
-    def setAlign(position: Pos){
-      if(position == Pos.CenterRight){
-        messageLabel.setStyle("-fx-text-fill:#FAFAFC;-fx-background-color:#54577C;-fx-background-radius:6px;")
-      }else{
-        messageLabel.setStyle("-fx-text-fill:#00000;-fx-background-color:#FAFAFC;-fx-background-radius:6px;")
-      }
-      hbox.alignment = position
+    def setSender(name: String){
+        nameLabel.text = name
     }
 }
