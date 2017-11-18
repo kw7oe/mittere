@@ -29,8 +29,9 @@ class Display extends Actor with ActorLogging {
   def receive: Receive = {
     case Initialize(users, rooms) =>
       Platform.runLater {
+        //after user joined, setup
         MyApp.mainController.initialize(users, rooms)
-        MyApp.mainController.clearJoin()
+        MyApp.mainController.showMain()
       }
 
     case ShowAlert(tuple) => {
@@ -54,7 +55,7 @@ class Display extends Actor with ActorLogging {
       Platform.runLater {
         MyApp.chatController.initialize(room, messages)
         MyApp.mainController.showChatRoom
-        MyApp.mainController.hideUnread(room.identifier)
+        MyApp.mainController.hideUnread(room)
       }
     case ShowTyping(room, username) =>
       if (shouldDisplay(room)) {
@@ -68,6 +69,12 @@ class Display extends Actor with ActorLogging {
           MyApp.chatController.addMessage(message)
         } else {
           log.info("Cannot add message")
+          chattable.chattableType match {
+            case Group =>
+              MyApp.mainController.showUnread(key,"group")
+            case Personal =>
+              MyApp.mainController.showUnread(key,"personal")
+          }
         }
       }     
     case _ => log.info("Receive unknown message")
