@@ -77,8 +77,15 @@ class MainController(
 
   def removeJoin(user: Room) {
     userListItems -= user
-    descriptionLabel.text="offline"
-    messageArea.disable = true
+    _room match{
+      case Some(c) =>
+        if(user.identifier == c.identifier){
+          descriptionLabel.text="offline"
+          messageArea.disable = true
+        }
+      case None=>
+    }
+    
   }
 
   def room: Option[Room] = _room
