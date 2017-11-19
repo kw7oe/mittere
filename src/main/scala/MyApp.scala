@@ -47,6 +47,8 @@ object MyApp extends JFXApp {
     scene = new Scene() {
       root = joinScreen
     }
+    minHeight = 630
+    minWidth = 800
   }
 
   stage.onCloseRequest = handle {
