@@ -1,13 +1,13 @@
 import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter}
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.immutable.{HashMap, HashSet}
+import scala.collection.immutable.{SortedMap, HashSet}
 
-trait ChatManagement extends ActorLogging { this: Actor => 
+trait ChatManagement extends ActorLogging { this: Actor =>
   import Node._
 
-  var serverActor: Option[ActorSelection]
+  var superNodeActor: Option[ActorSelection]
   var username: Option[String]
-  var usernameToClient: Map[String,ActorRef]
+  var usernameToClient: SortedMap[String,ActorRef]
   var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
 
@@ -20,10 +20,10 @@ trait ChatManagement extends ActorLogging { this: Actor =>
         case Personal => usernameToRoom.get(chatRoom.identifier)
       }
 
-      room.foreach { r => 
+      room.foreach { r =>
           if (!r.users.contains(self)) {
             // Broadcast to other users
-            serverActor.get ! Server.UpdateRoom(chatRoom.identifier)
+            superNodeActor.get ! SuperNode.UpdateRoom(chatRoom.identifier)
             usernameToClient.foreach { case (_, userActor) =>
               userActor ! JoinChatRoom(chatRoom.identifier)
             }
@@ -37,7 +37,7 @@ trait ChatManagement extends ActorLogging { this: Actor =>
         case Personal => usernameToRoom.get(chatRoom.identifier)
       }
 
-      room foreach { r => 
+      room foreach { r =>
         r.users.foreach { u =>
           u ! ReceiveShowTyping(chatRoom, username.get)
         }
@@ -49,7 +49,6 @@ trait ChatManagement extends ActorLogging { this: Actor =>
       }
     case RequestToSendMessage(chatRoom, msg) =>
       log.info(s"RequestToSendMessage: $chatRoom, $msg")
-      // WARNING
       val room = chatRoom.chatRoomType match {
         case Group => roomNameToRoom.get(chatRoom.identifier).get
         case Personal => usernameToRoom.get(chatRoom.identifier).get
@@ -68,6 +67,6 @@ trait ChatManagement extends ActorLogging { this: Actor =>
       }
       // WARNING
       room.get.messages += msg
-      MyApp.displayActor ! Display.AddMessage(chatRoom,msg)    
+      MyApp.displayActor ! Display.AddMessage(chatRoom,msg)
   }
 }

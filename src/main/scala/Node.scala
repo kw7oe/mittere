@@ -1,4 +1,5 @@
 import akka.actor.ActorRef
+import scala.collection.immutable.SortedMap
 
 object Node {
   // JoinManagement
@@ -6,10 +7,11 @@ object Node {
   case class RequestToJoin(serverAddress: String,
                            portNumber: String,
                            username: String)
-  case class Joined(clients: Map[String, ActorRef],
+  case class Joined(clients: SortedMap[String, ActorRef],
                     rooms:  Map[String, Room])
 
   // SessionManagement
+  case object NewSuperNode
   case class NewUser(name: String, actorRef: ActorRef)
   case class RequestToCreateChatRoom(roomName: String)
   case class JoinChatRoom(key: String)
@@ -23,9 +25,9 @@ object Node {
   case class ReceiveMessage(room: Room, message: Room.Message)
 }
 
-class Node extends 
-  NodeActor with 
+class Node extends
+  NodeActor with
   JoinManagement with
   SessionManagement with
-  ChatManagement {  
+  ChatManagement {
 }

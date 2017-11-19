@@ -1,13 +1,13 @@
 import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter}
-import scala.collection.immutable.HashSet
+import scala.collection.immutable.{HashSet, SortedMap}
 import scala.collection.mutable.ArrayBuffer
 
 trait JoinManagement extends ActorLogging { this: Actor =>
   import Node._
 
-  var serverActor: Option[ActorSelection]
+  var superNodeActor: Option[ActorSelection]
   var username: Option[String]
-  var usernameToClient: Map[String, ActorRef]
+  var usernameToClient: SortedMap[String, ActorRef]
   var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
 
@@ -17,22 +17,22 @@ trait JoinManagement extends ActorLogging { this: Actor =>
     "Please enter a different server and port combination."
   )
   private val invalidUsernameErrorMessage = (
-    "Invalid Username", 
-    "Username has already been taken.", 
+    "Invalid Username",
+    "Username has already been taken.",
     "Please enter a different username"
   )
 
   protected def joinManagement: Receive = {
     case d: DeadLetter =>
       log.info(s"Receive DeadLetter: $d")
-      if (isJoinDeadLetter(d)) { 
+      if (isJoinDeadLetter(d)) {
         displayAlert(invalidAddressErrorMessage)
-      }   
+      }
     case RequestToJoin(serverAddress, portNumber, name) =>
       log.info("RequestToJoin")
-      serverActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/server"))
+      superNodeActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/super-node"))
       username = Some(name)
-      serverActor.get ! Server.Join(username.get)  
+      superNodeActor.get ! SuperNode.Join(username.get)
     case InvalidUsername =>
       log.info("Receive InvalidUsername")
       displayAlert(invalidUsernameErrorMessage)
@@ -44,7 +44,7 @@ trait JoinManagement extends ActorLogging { this: Actor =>
       usernameToClient = users
 
       // Create One to One Room for each online users
-      usernameToClient.foreach { case (name, ref) => 
+      usernameToClient.foreach { case (name, ref) =>
         // Create a unique identifier for the room
         val identifier = Array(name, username.get).sorted.mkString(":")
         val room = new Room(
@@ -62,9 +62,9 @@ trait JoinManagement extends ActorLogging { this: Actor =>
       // Initialize Display with the info received
       MyApp.displayActor ! Display.Initialize(usernameToRoom, roomNameToRoom, username.get)
   }
-  
+
   private def isJoinDeadLetter(deadLetter: DeadLetter): Boolean = {
-    return deadLetter.message == Server.Join(username.get)
+    return deadLetter.message == SuperNode.Join(username.get)
   }
 
   private def displayAlert(messages: Tuple3[String, String, String]) {

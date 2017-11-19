@@ -24,8 +24,8 @@ object MyApp extends JFXApp {
   implicit val executor = system.dispatcher
 
   // Initialize Actor
-  val serverActor = system.actorOf(Props[Server], "server")
-  val clientActor = system.actorOf(Props[Node], "client")
+  val superNodeActor = system.actorOf(Props[SuperNode], "super-node")
+  val clientActor = system.actorOf(Props[Node], "node")
   val displayActor = system.actorOf(Props[Display], "display")
 
   // Initialize Join Screen
@@ -47,7 +47,7 @@ object MyApp extends JFXApp {
     scene = new Scene() {
       root = joinScreen
     }
-    minHeight = 630
+    minHeight = 620
     minWidth = 800
   }
 
