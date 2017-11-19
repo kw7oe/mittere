@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="hbox" alignment="CENTER_LEFT" minWidth="560.0" prefWidth="560.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MessageController">
+<HBox fx:id="hbox" alignment="CENTER_LEFT" minWidth="520.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MessageController">
    <children>
       <Label fx:id="messageLabel" maxWidth="373.0" minWidth="30.0" style="-fx-background-color: #fafafc; -fx-background-radius: 6;" text="message" wrapText="true">
          <font>

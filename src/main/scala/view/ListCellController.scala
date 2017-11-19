@@ -58,7 +58,6 @@ class ListCellController(
   }
 
   def highlight(){
-    println("highlighted")
     hbox.setStyle("-fx-background-color:#34374d")
   }
   def removeHighlight(){

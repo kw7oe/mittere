@@ -77,6 +77,8 @@ class MainController(
 
   def removeJoin(user: Room) {
     userListItems -= user
+    descriptionLabel.text="offline"
+    messageArea.disable = true
   }
 
   def room: Option[Room] = _room
