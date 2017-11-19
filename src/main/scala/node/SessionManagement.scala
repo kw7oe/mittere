@@ -1,13 +1,13 @@
 import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef}
-import scala.collection.immutable.HashSet
+import scala.collection.immutable.{HashSet, SortedMap}
 import scala.collection.mutable.ArrayBuffer
 
 trait SessionManagement extends ActorLogging { this: Actor =>
   import Node._
 
-  var serverActor: Option[ActorSelection]
+  var superNodeActor: Option[ActorSelection]
   var username: Option[String]
-  var usernameToClient: Map[String,ActorRef]
+  var usernameToClient: SortedMap[String,ActorRef]
   var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
 
@@ -33,11 +33,22 @@ trait SessionManagement extends ActorLogging { this: Actor =>
         // Inform Display to remove user
         val identifier = Array(value._1, username.get).sorted.mkString(":")
         val room = usernameToRoom.get(identifier)
+        usernameToRoom -= identifier
 
         room.foreach { r =>
           MyApp.displayActor ! Display.RemoveJoin(r)
         }
       }
+
+      if (superNodeActor.get.anchorPath.address == remote) {
+        val firstKey = usernameToClient.firstKey
+        if (firstKey == username.get) {
+          MyApp.superNodeActor ! SuperNode.BecomeSuperNode(usernameToClient, roomNameToRoom)
+        }
+      }
+    case NewSuperNode =>
+      log.info("Receive NewSuperNode")
+      superNodeActor = Some(MyApp.system.actorSelection(sender().path))
     case NewUser(name, ref) =>
       // Keep track of new user
       usernameToClient += (name -> ref)
@@ -75,7 +86,7 @@ trait SessionManagement extends ActorLogging { this: Actor =>
         val createdRoom = roomNameToRoom.get(roomName).get
 
         // Inform the host about the new room
-        serverActor.get ! Server.ChatRoomCreated(createdRoom)
+        superNodeActor.get ! SuperNode.ChatRoomCreated(createdRoom)
 
         // Broadcast the created room to other users
         usernameToClient.foreach { case (_, userActor) =>

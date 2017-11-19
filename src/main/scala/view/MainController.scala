@@ -109,11 +109,11 @@ class MainController(
       case Group => roomListItems
     }
 
-    for (i <- 0 until items.size) {
-      var item = items(i)
+    for (index <- 0 until items.size) {
+      var item = items(index)
       if (item.identifier == room.identifier) {
         item.unreadNumber += 1
-        items.remove(i)
+        items.remove(index)
         items.prepend(item)
       }
     }

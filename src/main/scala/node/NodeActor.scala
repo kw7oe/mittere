@@ -1,11 +1,11 @@
 import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter}
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.immutable.{HashMap, HashSet}
+import scala.collection.immutable.{HashMap, HashSet,TreeMap, SortedMap}
 
 trait NodeActor extends Actor {
-  var serverActor: Option[ActorSelection] = None
+  var superNodeActor: Option[ActorSelection] = None
   var username: Option[String] = None
-  var usernameToClient: Map[String,ActorRef] = new HashMap()
+  var usernameToClient: SortedMap[String,ActorRef] = new TreeMap()
   var usernameToRoom: Map[String, Room] = new HashMap()
   var roomNameToRoom: Map[String, Room] = new HashMap()
 
