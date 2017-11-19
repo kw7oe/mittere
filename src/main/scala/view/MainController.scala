@@ -92,9 +92,9 @@ class MainController(
       case Personal => "online"
       case Group => users.mkString(" · ")
     }
-
     this.descriptionLabel.text = description
     this.messageArea.disable = false
+    setupListCell()
   }
 
   def showUnread(room: Room) {
@@ -130,7 +130,7 @@ class MainController(
   // Customize the ListCell in the List View
   private def setupListCell() {
     val callback: (ListView[Room]) => ListCell[Room]  = { _ =>
-      new ListCell[Room]() {
+      new ListCell[Room]() { cell =>
         item.onChange { (room, oldValue, newValue) => {
           if (newValue == null) {
             graphic = null
@@ -143,6 +143,12 @@ class MainController(
 
             controller.room = room.value
             controller.showUnread(room.value.unreadNumber)
+            _room match {
+              case Some(c) =>
+                var highlighted = (c.identifier==room.value.identifier)
+                controller.setHighlight(highlighted)
+              case None =>
+            }      
             graphic = root
           }
         }}

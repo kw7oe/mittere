@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-
 <GridPane prefWidth="238.0" style="-fx-background-color: #34374d;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="CreateChatRoomDialogController">
   <columnConstraints>
     <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -30,23 +29,29 @@
             <Insets bottom="10.0" />
          </GridPane.margin>
       </Label>
-      <TextField fx:id="roomNameField" onKeyPressed="#handleKeyBoard" GridPane.rowIndex="1" />
-      <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="152.0" spacing="10.0" GridPane.rowIndex="2">
+      <TextField fx:id="roomNameField" onKeyPressed="#handleKeyBoard" GridPane.rowIndex="1">
+         <font>
+            <Font name="Helvetica Neue" size="13.0" />
+         </font>
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin></TextField>
+      <HBox alignment="CENTER" prefHeight="40.0" prefWidth="152.0" spacing="10.0" GridPane.rowIndex="2">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleAddRoom" style="-fx-background-color: #54577c;" text="Create" textFill="#fafafc">
+            <Button minHeight="25.0" mnemonicParsing="false" onAction="#handleAddRoom" prefHeight="25.0" style="-fx-background-color: #54577c;" text="Create" textFill="#fafafc">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
                <font>
-                  <Font name="Hiragino Kaku Gothic StdN W8" size="13.0" />
+                  <Font name="Hiragino Kaku Gothic StdN W8" size="10.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleCancel" style="-fx-background-color: #54577c;" text="Cancel" textFill="#fafafc">
+            <Button minHeight="25.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" style="-fx-background-color: #54577c;" text="Cancel" textFill="#fafafc">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
                <font>
-                  <Font name="Hiragino Sans W8" size="13.0" />
+                  <Font name="Hiragino Sans W8" size="10.0" />
                </font>
             </Button>
          </children>
@@ -56,6 +61,6 @@
       </HBox>
    </children>
    <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+      <Insets bottom="30.0" left="20.0" right="20.0" top="20.0" />
    </padding>
 </GridPane>
