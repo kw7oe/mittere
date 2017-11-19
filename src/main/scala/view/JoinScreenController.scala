@@ -11,11 +11,13 @@ class JoinScreenController(
   private val usernameField: TextField,
   private val joinButton: Button
 ) {
+
   def handleJoin() {
     import Node._
     var server = serverField.text.value
     var port = portField.text.value
     var username = usernameField.text.value
+
     if (username.length == 0) {
       MyApp.showAlert(("Input Expected",
        "Username is required.",
@@ -27,7 +29,7 @@ class JoinScreenController(
   }
 
   def handleKeyboard(action: KeyEvent) {
-    if(action.code == KeyCode.ENTER) {
+    if (action.code == KeyCode.ENTER) {
       handleJoin()
     }
   }

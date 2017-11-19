@@ -12,8 +12,8 @@ trait SessionManagement extends ActorLogging { this: Actor =>
   var roomNameToRoom: Map[String, Room]
 
   private val invalidRoomNameErrorMessage = (
-    "Invalid Room Name", 
-    "Room name has already been taken.", 
+    "Invalid Room Name",
+    "Room name has already been taken.",
     "Please enter a different room name."
   )
 
@@ -26,14 +26,16 @@ trait SessionManagement extends ActorLogging { this: Actor =>
       }
 
       // If the user exists in our record
-      userInfo.foreach { value => 
+      userInfo.foreach { value =>
+        log.info(s"Shoudl remove user: $value")
         // Remove tracking
         usernameToClient -= value._1
 
         // Inform Display to remove user
-        val room = usernameToRoom.get(value._1)
+        val identifier = Array(value._1, username.get).sorted.mkString(":")
+        val room = usernameToRoom.get(identifier)
 
-        room.foreach { r => 
+        room.foreach { r =>
           MyApp.displayActor ! Display.RemoveJoin(r)
         }
       }
@@ -80,13 +82,13 @@ trait SessionManagement extends ActorLogging { this: Actor =>
         usernameToClient.foreach { case (_, userActor) =>
           userActor ! NewChatRoom(createdRoom)
         }
-      }     
+      }
     case JoinChatRoom(identifier) =>
       log.info(s"JoinChatRoom: $identifier")
       val room = roomNameToRoom.get(identifier)
       room.foreach { r => r.users += sender() }
     case NewChatRoom(room) =>
-      // Received broadcast from other node 
+      // Received broadcast from other node
       // about new room
       log.info(s"NewChatRoom: $room")
 
@@ -100,5 +102,5 @@ trait SessionManagement extends ActorLogging { this: Actor =>
   private def displayAlert(messages: Tuple3[String, String, String]) {
     MyApp.displayActor ! Display.ShowAlert(messages)
   }
-  
+
 }

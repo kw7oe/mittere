@@ -5,13 +5,13 @@ import scalafx.event.ActionEvent
 import scalafx.scene.input.{KeyEvent, KeyCode}
 import scalafx.Includes._
 
-@sfxml 
+@sfxml
 class CreateChatRoomDialogController(
   private val roomNameField: TextField,
   ) {
-  var dialogStage: Stage = null 
+  var dialogStage: Stage = null
   private var _roomName: String = null
-  
+
   def roomName = _roomName
   def roomName_=(name: String) {
     _roomName = name
@@ -33,15 +33,15 @@ class CreateChatRoomDialogController(
       dialogStage.close()
     }
   }
-  
+
   def handleKeyBoard(action: KeyEvent) {
-    if(action.code == KeyCode.ENTER) {
+    if (action.code == KeyCode.ENTER) {
       handleAddRoom()
     } else if (action.code == KeyCode.ESCAPE) {
       handleCancel()
     }
   }
-  
+
   def handleCancel() {
     dialogStage.close()
   }

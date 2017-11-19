@@ -15,7 +15,7 @@ object Display {
 
   // Chat Room related
   case class ShowNewChatRoom(room: Room)
-  case class ShowChatRoom(room: Room, 
+  case class ShowChatRoom(room: Room,
                           messages: ArrayBuffer[Room.Message])
 
   // Chatting related
@@ -45,9 +45,10 @@ class Display extends Actor with ActorLogging {
         MyApp.mainController.showJoin(user)
       }
     case RemoveJoin(user) =>
+      log.info(s"RemoveJoin: $user")
       Platform.runLater {
         MyApp.mainController.removeJoin(user)
-      }      
+      }
     case ShowNewChatRoom(room) =>
       Platform.runLater {
         MyApp.mainController.addChatroom(room)
@@ -63,21 +64,15 @@ class Display extends Actor with ActorLogging {
         Platform.runLater {
           MyApp.mainController.showStatus(username)
         }
-      }      
+      }
     case AddMessage(room, message) =>
       Platform.runLater {
         if (shouldDisplay(room)) {
           MyApp.mainController.addMessage(message)
         } else {
-          log.info("Cannot add message")
-          room.chatRoomType match {
-            case Group =>
-              MyApp.mainController.showUnread(room)
-            case Personal =>
-              MyApp.mainController.showUnread(room)
-          }
+          MyApp.mainController.showUnread(room)
         }
-      }     
+      }
     case _ => log.info("Receive unknown message")
   }
 

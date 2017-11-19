@@ -19,7 +19,7 @@ object MyApp extends JFXApp {
   val config = setConfigWith(address)
   val system = ActorSystem("chat", config)
 
-  // To be used in scehduling stop showing typing
+  // To be used in scehduling stop or showing typing
   val scheduler = system.scheduler
   implicit val executor = system.dispatcher
 
@@ -41,13 +41,6 @@ object MyApp extends JFXApp {
   mainLoader.load(mainFXML)
   val main = mainLoader.getRoot[javafx.scene.layout.GridPane]
   var mainController = mainLoader.getController[MainController#Controller]()
-
-  // Initialize ChatRoom UI
-  // val chatLoader: FXMLLoader = new FXMLLoader(null, NoDependencyResolver)
-  // val chatRoomFXML = getClass.getResourceAsStream("Version 1/ChatRoomUI.fxml")
-  // chatLoader.load(chatRoomFXML)
-  // val chatRoomUI = chatLoader.getRoot[javafx.scene.layout.AnchorPane]
-  // val chatController = chatLoader.getController[ChatRoomController#Controller]
 
   // Initialize Stage
   stage = new PrimaryStage() {

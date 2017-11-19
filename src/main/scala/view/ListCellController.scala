@@ -29,6 +29,7 @@ class ListCellController(
     }
     hideUnread()
   }
+
   def showUnread(number: Int){
     if(number > 0) {
       unreadNumber.text = number.toString()
@@ -37,9 +38,11 @@ class ListCellController(
       hideUnread()
     }
   }
+
   def hideCircle(){
     hbox.getChildren().remove(onlineStatusCircle)
   }
+
   def hideUnread(){
     unreadNumber.text = 0.toString()
     unreadNumber.opacity = 0
