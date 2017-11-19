@@ -16,7 +16,8 @@ object Display {
   // Chat Room related
   case class ShowNewChatRoom(room: Room)
   case class ShowChatRoom(room: Room,
-                          messages: ArrayBuffer[Room.Message])
+                          messages: ArrayBuffer[Room.Message],
+                          users: Set[String])
 
   // Chatting related
   case class ShowTyping(room: Room, username: String)
@@ -51,9 +52,9 @@ class Display extends Actor with ActorLogging {
       Platform.runLater {
         MyApp.mainController.addChatroom(room)
       }
-    case ShowChatRoom(room, messages) =>
+    case ShowChatRoom(room, messages, users) =>
       Platform.runLater {
-        MyApp.mainController.showRoom(room, messages)
+        MyApp.mainController.showRoom(room, messages, users)
         MyApp.mainController.hideUnread(room)
       }
     case ShowTyping(room, username) =>

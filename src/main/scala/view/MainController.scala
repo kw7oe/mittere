@@ -85,17 +85,12 @@ class MainController(
     roomNameLabel.text = _room.get.name
   }
 
-  def showRoom(room: Room, messages: ArrayBuffer[Room.Message]) {
+  def showRoom(room: Room, messages: ArrayBuffer[Room.Message], users: Set[String]) {
     this.room = room
     this.messages = messages
     var description = room.chatRoomType match {
       case Personal => "online"
-      case Group=>
-        var usernames = new ArrayBuffer[String]
-        userListItems.foreach { room =>
-          usernames.append(room.name)
-        }
-        usernames.mkString(" · ")
+      case Group => users.mkString(" · ")
     }
 
     this.descriptionLabel.text = description
@@ -119,7 +114,7 @@ class MainController(
     }
   }
 
-  def hideUnread(room: Room){
+  def hideUnread(room: Room) {
     var items = room.chatRoomType match {
       case Personal => userListItems
       case Group => roomListItems

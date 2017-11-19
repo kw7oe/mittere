@@ -21,14 +21,17 @@ trait ChatManagement extends ActorLogging { this: Actor =>
       }
 
       room.foreach { r =>
-          if (!r.users.contains(self)) {
-            // Broadcast to other users
-            superNodeActor.get ! SuperNode.UpdateRoom(chatRoom.identifier)
-            usernameToClient.foreach { case (_, userActor) =>
-              userActor ! JoinChatRoom(chatRoom.identifier)
-            }
+        if (!r.users.contains(self)) {
+          // Broadcast to other users
+          superNodeActor.get ! SuperNode.UpdateRoom(chatRoom.identifier)
+          usernameToClient.foreach { case (_, userActor) =>
+            userActor ! JoinChatRoom(chatRoom.identifier)
           }
-        MyApp.displayActor ! Display.ShowChatRoom(chatRoom, r.messages)
+        }
+        val users = usernameToClient.filter { case (name, ref) =>
+          r.users.contains(ref)
+        }.keySet
+        MyApp.displayActor ! Display.ShowChatRoom(chatRoom, r.messages, users)
       }
     case Typing(chatRoom) =>
       log.info(s"Typing: $chatRoom")
