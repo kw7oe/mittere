@@ -8,17 +8,12 @@ class RoomMessageController(
   private val nameLabel: Label,
   private val messageLabel: Label
 ) {
-//   private var _message: Option[String] = None
 
-//   def message = _message
-//   def message_=(message: String) {
-//     _message = Some(message)
-//     messageLabel.text = message
-//   }
-    def setMessage(message: String){
-        messageLabel.text = message
-    }
-    def setSender(name: String){
-        nameLabel.text = name
-    }
+  def setMessage(message: String) {
+    messageLabel.text = message
+  }
+  def setSender(name: String) {
+    nameLabel.text = name
+  }
+
 }

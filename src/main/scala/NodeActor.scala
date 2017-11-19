@@ -14,9 +14,9 @@ trait NodeActor extends Actor {
     context.system.eventStream.subscribe(self, classOf[DeadLetter])
   }
 
-  def receive: Receive = 
-    joinManagement orElse 
-    sessionManagement orElse 
+  def receive: Receive =
+    joinManagement orElse
+    sessionManagement orElse
     chatManagement
 
   protected def joinManagement: Receive

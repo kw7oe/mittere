@@ -32,8 +32,7 @@ class MainController(
   private var username: Option[String] = None
   final var shouldListenToTyping = true
 
-  setupUserListCell()
-  setupRoomListCell()
+  setupListCell()
   setupMessageListCell()
   messageList.items = messages
   userList.items = userListItems
@@ -103,45 +102,39 @@ class MainController(
     this.messageArea.disable = false
   }
 
-  def showUnread(room: Room){
+  def showUnread(room: Room) {
     //tell list cell to show unread
-    room.chatRoomType match {
-      case Personal =>
-        for(userCell <- userListItems.toArray){
-          if(userCell.identifier == room.identifier){
-            userCell.unreadNumber += 1
-            setupUserListCell()
-          }
-        }
-      case Group =>
-        for(chatroom <- roomListItems.toArray){
-          if(chatroom.identifier == room.identifier){
-            chatroom.unreadNumber += 1
-            setupRoomListCell()
-          }
-        }
+    var items = room.chatRoomType match {
+      case Personal => userListItems
+      case Group => roomListItems
+    }
+
+    for (i <- 0 until items.size) {
+      var item = items(i)
+      if (item.identifier == room.identifier) {
+        item.unreadNumber += 1
+        items.remove(i)
+        items.prepend(item)
+      }
     }
   }
 
   def hideUnread(room: Room){
-    room.chatRoomType match {
-      case Group =>
-        for(chatroom <- roomListItems.toArray){
-          if(chatroom.identifier == room.identifier){
-            chatroom.unreadNumber = 0
-          }
-        }
-      case Personal =>
-        for(chatroom <- userListItems.toArray){
-          if(chatroom.identifier == room.identifier){
-            chatroom.unreadNumber = 0
-          }
-        }
+    var items = room.chatRoomType match {
+      case Personal => userListItems
+      case Group => roomListItems
+    }
+
+    for (item <- items) {
+      if (item.identifier == room.identifier) {
+        item.unreadNumber = 0
+      }
     }
   }
+
   // Customize the ListCell in the List View
-  private def setupUserListCell() {
-    userList.cellFactory = { _ =>
+  private def setupListCell() {
+    val callback: (ListView[Room]) => ListCell[Room]  = { _ =>
       new ListCell[Room]() {
         item.onChange { (room, oldValue, newValue) => {
           if (newValue == null) {
@@ -160,29 +153,8 @@ class MainController(
         }}
       }
     }
-  }
-
-  private def setupRoomListCell() {
-    roomList.cellFactory = { _ =>
-      new ListCell[Room]() {
-        item.onChange { (room, oldValue, newValue) => {
-          if (newValue == null) {
-            graphic = null
-          } else {
-            val loader = new FXMLLoader(null, NoDependencyResolver)
-            val resource = getClass.getResourceAsStream("CustomListCell.fxml")
-            loader.load(resource)
-            val root = loader.getRoot[javafx.scene.layout.HBox]
-            val controller = loader.getController[ListCellController#Controller]
-
-            controller.room = room.value
-            controller.showUnread(room.value.unreadNumber)
-            controller.hideCircle()
-            graphic = root
-          }
-        }}
-      }
-    }
+    roomList.cellFactory = callback
+    userList.cellFactory = callback
   }
 
   private def setupMessageListCell() {
@@ -192,25 +164,25 @@ class MainController(
           if (newValue == null) {
             graphic = null
           } else {
+            val loader = new FXMLLoader(null, NoDependencyResolver)
             room.get.chatRoomType match {
               case Personal =>
-                val loader = new FXMLLoader(null, NoDependencyResolver)
+
                 val resource = getClass.getResourceAsStream("CustomMessageCell.fxml")
                 loader.load(resource)
                 val root = loader.getRoot[javafx.scene.layout.HBox]
                 val controller = loader.getController[MessageController#Controller]
 
-                if(message.value.from == username.get){
+                if (message.value.from == username.get) {
                   controller.setAlign(Pos.CenterRight)
-                }else{
+                } else {
                   controller.setAlign(Pos.CenterLeft)
                 }
                 controller.setMessage(message.value.value)
                 graphic = root
 
               case Group =>
-                if(message.value.from == username.get){
-                  val loader = new FXMLLoader(null, NoDependencyResolver)
+                if (message.value.from == username.get) {
                   val resource = getClass.getResourceAsStream("CustomMessageCell.fxml")
                   loader.load(resource)
                   val root = loader.getRoot[javafx.scene.layout.HBox]
@@ -218,8 +190,7 @@ class MainController(
                   controller.setAlign(Pos.CenterRight)
                   controller.setMessage(message.value.value)
                   graphic = root
-                }else{
-                  val loader = new FXMLLoader(null, NoDependencyResolver)
+                } else {
                   val resource = getClass.getResourceAsStream("RoomMessageCell.fxml")
                   loader.load(resource)
                   val root = loader.getRoot[javafx.scene.layout.HBox]

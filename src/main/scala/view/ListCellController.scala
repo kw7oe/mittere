@@ -20,6 +20,9 @@ class ListCellController(
   def room_=(room: Room) {
     _room = Some(room)
     name.text = room.name
+    if (room.chatRoomType == Group) {
+      hideCircle
+    }
   }
 
   def handleShowChat(action: MouseEvent) {

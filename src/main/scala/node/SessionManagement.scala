@@ -27,7 +27,6 @@ trait SessionManagement extends ActorLogging { this: Actor =>
 
       // If the user exists in our record
       userInfo.foreach { value =>
-        log.info(s"Shoudl remove user: $value")
         // Remove tracking
         usernameToClient -= value._1
 

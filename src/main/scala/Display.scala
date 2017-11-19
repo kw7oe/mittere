@@ -34,7 +34,6 @@ class Display extends Actor with ActorLogging {
         MyApp.mainController.initialize(users, rooms, username)
         MyApp.showMain()
       }
-
     case ShowAlert(tuple) => {
       Platform.runLater {
         MyApp.showAlert(tuple)
@@ -45,7 +44,6 @@ class Display extends Actor with ActorLogging {
         MyApp.mainController.showJoin(user)
       }
     case RemoveJoin(user) =>
-      log.info(s"RemoveJoin: $user")
       Platform.runLater {
         MyApp.mainController.removeJoin(user)
       }

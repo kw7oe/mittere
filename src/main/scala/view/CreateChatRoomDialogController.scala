@@ -6,9 +6,8 @@ import scalafx.scene.input.{KeyEvent, KeyCode}
 import scalafx.Includes._
 
 @sfxml
-class CreateChatRoomDialogController(
-  private val roomNameField: TextField,
-  ) {
+class CreateChatRoomDialogController(private val roomNameField: TextField) {
+
   var dialogStage: Stage = null
   private var _roomName: String = null
 
@@ -45,4 +44,5 @@ class CreateChatRoomDialogController(
   def handleCancel() {
     dialogStage.close()
   }
+
 }
