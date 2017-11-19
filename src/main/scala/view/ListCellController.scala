@@ -30,7 +30,6 @@ class ListCellController(
     if (action.button == MouseButton.Primary) {
       MyApp.clientActor ! RequestToChatWith(room.get)
     }
-    hideUnread()
   }
 
   def showUnread(number: Int){
@@ -49,5 +48,20 @@ class ListCellController(
   def hideUnread(){
     unreadNumber.text = 0.toString()
     unreadNumber.opacity = 0
+  }
+  def setHighlight(bool: Boolean){
+    if(bool){
+      highlight()
+    }else{
+      removeHighlight()
+    }
+  }
+
+  def highlight(){
+    println("highlighted")
+    hbox.setStyle("-fx-background-color:#34374d")
+  }
+  def removeHighlight(){
+    hbox.setStyle("-fx-background-color:Transparent")
   }
 }

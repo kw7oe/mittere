@@ -76,10 +76,16 @@
             </ScrollPane>
          </children>
       </AnchorPane>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" style="-fx-background-color: #34374d;" GridPane.rowIndex="2">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #34374d;" GridPane.rowIndex="2">
          <children>
-            <Button fx:id="createRoomButton" mnemonicParsing="false" onAction="#createRoom" styleClass="btn" text="Create Room" textFill="#fafafc" />
-            <Button fx:id="quitButton" mnemonicParsing="false" onAction="#handleQuit" styleClass="btn" text="Quit" textFill="#fafafc" />
+            <Button fx:id="createRoomButton" mnemonicParsing="false" onAction="#createRoom" prefHeight="26.0" prefWidth="100.0" styleClass="btn" text="Create Room" textFill="#fafafc">
+               <font>
+                  <Font name="Hiragino Kaku Gothic StdN W8" size="9.0" />
+               </font></Button>
+            <Button fx:id="quitButton" mnemonicParsing="false" onAction="#handleQuit" prefHeight="26.0" prefWidth="50.0" styleClass="btn" text="Quit" textFill="#fafafc">
+               <font>
+                  <Font name="Hiragino Kaku Gothic StdN W8" size="9.0" />
+               </font></Button>
          </children>
       </HBox>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #54577c;" GridPane.columnIndex="1">
@@ -96,16 +102,22 @@
             </Label>
          </children>
       </VBox>
-      <ListView fx:id="messageList" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #34374D;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <ListView fx:id="messageList" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #34374D;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding></ListView>
       <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #54577c;" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <children>
-            <TextArea fx:id="messageArea" disable="true" minHeight="0.0" minWidth="0.0" onKeyPressed="#handleTyped" prefHeight="26.0" prefWidth="540.0" promptText="Type a message">
+            <TextArea fx:id="messageArea" disable="true" minHeight="0.0" minWidth="0.0" onKeyPressed="#handleTyped" prefHeight="26.0" prefWidth="540.0" promptText="Type a message" wrapText="true">
                <VBox.margin>
-                  <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                </VBox.margin>
                <font>
                   <Font name="Helvetica Neue" size="11.0" />
                </font>
+               <padding>
+                  <Insets bottom="2.0" top="2.0" />
+               </padding>
             </TextArea>
          </children>
       </VBox>
