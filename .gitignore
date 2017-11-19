@@ -1,3 +1,6 @@
+# docx
+~$*.docx
+
 # sbt
 # (may want to keep parts of 'project')
 bin/
