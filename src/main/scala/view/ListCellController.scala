@@ -58,9 +58,9 @@ class ListCellController(
   }
 
   def highlight(){
-    hbox.setStyle("-fx-background-color:#34374d")
+    hbox.setStyle("-fx-background-color:#34374d;-fx-border-color:#797DA5;-fx-border-width:0 0 1 0;")
   }
   def removeHighlight(){
-    hbox.setStyle("-fx-background-color:Transparent")
+    hbox.setStyle("-fx-background-color:Transparent;-fx-border-color:#797DA5;-fx-border-width:0 0 1 0;")
   }
 }
