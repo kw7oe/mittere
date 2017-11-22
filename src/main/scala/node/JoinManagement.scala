@@ -1,6 +1,8 @@
-import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter}
+import akka.actor.{Actor, ActorLogging, ActorSelection, ActorRef, DeadLetter, ReceiveTimeout}
 import scala.collection.immutable.{HashSet, SortedMap}
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 trait JoinManagement extends ActorLogging { this: Actor =>
   import Node._
@@ -10,6 +12,7 @@ trait JoinManagement extends ActorLogging { this: Actor =>
   var usernameToClient: SortedMap[String, ActorRef]
   var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
+
 
   private val invalidAddressErrorMessage = (
     "Invalid Address",
@@ -22,6 +25,8 @@ trait JoinManagement extends ActorLogging { this: Actor =>
     "Please enter a different username"
   )
 
+
+
   protected def joinManagement: Receive = {
     case d: DeadLetter =>
       log.info(s"Receive DeadLetter: $d")
@@ -33,10 +38,14 @@ trait JoinManagement extends ActorLogging { this: Actor =>
       superNodeActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/super-node"))
       username = Some(name)
       superNodeActor.get ! SuperNode.Join(username.get)
+
+      context.setReceiveTimeout(2 second)
     case InvalidUsername =>
+      context.setReceiveTimeout(Duration.Undefined)
       log.info("Receive InvalidUsername")
       displayAlert(invalidUsernameErrorMessage)
     case Joined(users, rooms)  =>
+      context.setReceiveTimeout(Duration.Undefined)
       // Receive online users and rooms info from Manager
       log.info("Joined")
 
@@ -46,7 +55,7 @@ trait JoinManagement extends ActorLogging { this: Actor =>
       // Create One to One Room for each online users
       usernameToClient.foreach { case (name, ref) =>
         // Create a unique identifier for the room
-        val identifier = Array(name, username.get).sorted.mkString(":")
+        val identifier = Room.unique_identifier(name, username.get)
         val room = new Room(
           name = name,
           identifier = identifier,
@@ -61,6 +70,14 @@ trait JoinManagement extends ActorLogging { this: Actor =>
 
       // Initialize Display with the info received
       MyApp.displayActor ! Display.Initialize(usernameToRoom, roomNameToRoom, username.get)
+    case ReceiveTimeout =>
+      context.setReceiveTimeout(Duration.Undefined)
+      displayAlert((
+        "Connection Timeout",
+        "The connection has timed out",
+        "Please try again later."
+      ))
+      log.info("Receive Timeout")
   }
 
   private def isJoinDeadLetter(deadLetter: DeadLetter): Boolean = {

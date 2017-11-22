@@ -31,7 +31,7 @@ trait SessionManagement extends ActorLogging { this: Actor =>
         usernameToClient -= value._1
 
         // Inform Display to remove user
-        val identifier = Array(value._1, username.get).sorted.mkString(":")
+        val identifier = Room.unique_identifier(value._1, username.get)
         val room = usernameToRoom.get(identifier)
         usernameToRoom -= identifier
 
@@ -52,7 +52,7 @@ trait SessionManagement extends ActorLogging { this: Actor =>
     case NewUser(name, ref) =>
       // Keep track of new user
       usernameToClient += (name -> ref)
-      val identifier = Array(name, username.get).sorted.mkString(":")
+      val identifier = Room.unique_identifier(name, username.get)
       val room = new Room(
         name = name,
         identifier = identifier,

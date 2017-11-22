@@ -6,7 +6,7 @@ case object Personal extends ChatRoomType
 case object Group extends ChatRoomType
 
 case class Room(
-  var name: String, 
+  var name: String,
   var identifier: String,
   val chatRoomType: ChatRoomType,
   val messages: ArrayBuffer[Room.Message],
@@ -21,8 +21,12 @@ case class Room(
 
 object Room {
   case class Message(from: String, value: String)
-  
+
   def apply(roomEntries: Map[String, Room]): Seq[Room] = {
     roomEntries.values.toSeq
+  }
+
+  def unique_identifier(name1: String, name2: String): String = {
+    return Array(name1, name2).sorted.mkString(":")
   }
 }

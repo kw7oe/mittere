@@ -32,7 +32,6 @@ class SuperNode extends Actor with ActorLogging {
     case Join(name) =>
       // Join request from new node
       log.info(s"Join from $name")
-
       // Check username is unique
       if (usernameToClient.contains(name)) {
         // If it is not, inform that the username is invalid

@@ -56,7 +56,6 @@ trait ChatManagement extends ActorLogging { this: Actor =>
         case Group => roomNameToRoom.get(chatRoom.identifier).get
         case Personal => usernameToRoom.get(chatRoom.identifier).get
       }
-      log.info(s"${room.users}")
       room.users.foreach { actor =>
         val message = new Room.Message(username.get, msg)
         val key = chatRoom.identifier
@@ -69,7 +68,8 @@ trait ChatManagement extends ActorLogging { this: Actor =>
         case Personal => usernameToRoom.get(chatRoom.identifier)
       }
       // WARNING
-      room.get.messages += msg
+      room.foreach { r => r.messages += msg }
       MyApp.displayActor ! Display.AddMessage(chatRoom,msg)
+    case _ => log.info("Receive unknown message.")
   }
 }

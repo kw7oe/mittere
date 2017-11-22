@@ -85,7 +85,7 @@ class MainController(
         }
       case None=>
     }
-    
+
   }
 
   def room: Option[Room] = _room
@@ -157,7 +157,7 @@ class MainController(
                 var highlighted = (c.identifier==room.value.identifier)
                 controller.setHighlight(highlighted)
               case None =>
-            }      
+            }
             graphic = root
           }
         }}
@@ -245,8 +245,7 @@ class MainController(
     if (shouldListenToTyping) {
       // Should let it crash if room is empty
       // As it should be technically impossible to
-      // have access to ChatRoomController without
-      // room
+      // have access to without room
       MyApp.clientActor ! Typing(room.get)
       shouldListenToTyping = false
       val task = new Runnable {
