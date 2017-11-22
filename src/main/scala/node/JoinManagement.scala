@@ -24,13 +24,17 @@ trait JoinManagement extends ActorLogging { this: Actor =>
     "Username has already been taken.",
     "Please enter a different username"
   )
-
-
+  private val connectionTimeoutMessage = (
+    "Connection Timeout",
+    "The connection has timed out",
+    "Please try again later."
+  )
 
   protected def joinManagement: Receive = {
-    case d: DeadLetter =>
-      log.info(s"Receive DeadLetter: $d")
-      if (isJoinDeadLetter(d)) {
+    case DeadLetter(message: SuperNode.Join, _, _) =>
+      context.setReceiveTimeout(Duration.Undefined)
+      log.info(s"Receive DeadLetter: $message")
+      if (isJoinDeadLetter(message)) {
         displayAlert(invalidAddressErrorMessage)
       }
     case RequestToJoin(serverAddress, portNumber, name) =>
@@ -72,16 +76,12 @@ trait JoinManagement extends ActorLogging { this: Actor =>
       MyApp.displayActor ! Display.Initialize(usernameToRoom, roomNameToRoom, username.get)
     case ReceiveTimeout =>
       context.setReceiveTimeout(Duration.Undefined)
-      displayAlert((
-        "Connection Timeout",
-        "The connection has timed out",
-        "Please try again later."
-      ))
+      displayAlert(connectionTimeoutMessage)
       log.info("Receive Timeout")
   }
 
-  private def isJoinDeadLetter(deadLetter: DeadLetter): Boolean = {
-    return deadLetter.message == SuperNode.Join(username.get)
+  private def isJoinDeadLetter(message: SuperNode.Join): Boolean = {
+    return message == SuperNode.Join(username.get)
   }
 
   private def displayAlert(messages: Tuple3[String, String, String]) {

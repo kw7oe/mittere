@@ -2,6 +2,9 @@ import akka.actor.ActorRef
 import scala.collection.immutable.SortedMap
 
 object Node {
+  case object Acknowledge
+  case object Timeout
+
   // JoinManagement
   case object InvalidUsername
   case class RequestToJoin(serverAddress: String,
