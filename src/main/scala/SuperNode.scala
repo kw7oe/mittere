@@ -17,10 +17,26 @@ class SuperNode extends Actor with ActorLogging {
   var usernameToClient: SortedMap[String, ActorRef] = new TreeMap()
   var roomNameToRoom: Map[String, Room] = new HashMap()
 
-  override def preStart() = log.info("SuperNode started")
+  override def preStart() = {
+    context.system.eventStream.subscribe(self, classOf[akka.remote.DisassociatedEvent])
+    log.info("SuperNode started")
+  }
   override def postStop() = log.info("SuperNode stopped")
 
   override def receive = {
+    case akka.remote.DisassociatedEvent(local, remote, _) =>
+      // When Remote User disconnected
+      // Check which user disconnected
+      val userInfo = usernameToClient.find { case(_, x) =>
+       x.path.address == remote
+      }
+
+      // If the user exists in our record
+      userInfo.foreach { value =>
+        // Remove tracking
+        usernameToClient -= value._1
+
+      }
     case BecomeSuperNode(clients, rooms) =>
       log.info("I have become super node")
       usernameToClient = clients

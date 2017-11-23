@@ -15,7 +15,7 @@ trait ChatManagement extends ActorLogging { this: Actor =>
 
   val connectionTimeoutMessage = (
     "Connection Timeout",
-    "The connection has timed out, fail to send the message.",
+    "Failed to send the message.",
     "Please try again later."
   )
 
