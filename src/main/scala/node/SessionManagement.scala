@@ -49,6 +49,7 @@ trait SessionManagement extends ActorLogging { this: Actor =>
     case NewSuperNode =>
       log.info("Receive NewSuperNode")
       superNodeActor = Some(MyApp.system.actorSelection(sender().path))
+      displayAlert(newSuperNodeMessage(sender().path.address.toString))
     case NewUser(name, ref) =>
       // Keep track of new user
       usernameToClient += (name -> ref)
@@ -107,6 +108,20 @@ trait SessionManagement extends ActorLogging { this: Actor =>
 
       // Inform Display to show new room
       MyApp.displayActor ! Display.ShowNewChatRoom(room)
+  }
+
+  private def newSuperNodeMessage(path: String): Tuple3[String, String, String] = {
+
+    val res = path match {
+      case "akka://chat" => "You're now the new supernode."
+      case other => s"The new supernode is now at $other"
+    }
+
+    return (
+      "New Supernode",
+      "The previous supernode has been disconnected.",
+      res
+    )
   }
 
   private def displayAlert(messages: Tuple3[String, String, String]) {

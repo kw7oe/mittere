@@ -17,7 +17,7 @@ class MessageController(
     if (position == Pos.CenterRight) {
       messageLabel.setStyle("-fx-text-fill:#FAFAFC;-fx-background-color:#54577C;-fx-background-radius:6px;")
     } else {
-      messageLabel.setStyle("-fx-text-fill:#00000;-fx-background-color:#FAFAFC;-fx-background-radius:6px;")
+      messageLabel.setStyle("-fx-text-fill:#000;-fx-background-color:#FAFAFC;-fx-background-radius:6px;")
     }
     hbox.alignment = position
   }

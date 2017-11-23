@@ -3,7 +3,7 @@ import scala.collection.immutable.SortedMap
 
 object Node {
   case object Acknowledge
-  case object Timeout
+  case class Timeout(name: String)
 
   // JoinManagement
   case object InvalidUsername

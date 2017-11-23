@@ -13,12 +13,6 @@ trait ChatManagement extends ActorLogging { this: Actor =>
   var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
 
-  val connectionTimeoutMessage = (
-    "Connection Timeout",
-    "Failed to send the message.",
-    "Please try again later."
-  )
-
   protected def chatManagement: Receive = {
     case RequestToChatWith(chatRoom) =>
       log.info(s"RequestToChatWith: $chatRoom")
@@ -82,9 +76,11 @@ trait ChatManagement extends ActorLogging { this: Actor =>
         val extraActor = buildExtraActor
         actor.tell(ReceiveMessage(chatRoom, message), extraActor)
 
+
+        val name = usernameToClient.map(_.swap).get(actor).getOrElse("unknown")
         // Schedule the timeout after 2 second to the created
         // extra actor
-        context.system.scheduler.scheduleOnce(2 second, extraActor, Timeout)
+        context.system.scheduler.scheduleOnce(2 second, extraActor, Timeout(name))
 
       }
     case ReceiveMessage(chatRoom, msg) =>
@@ -107,16 +103,24 @@ trait ChatManagement extends ActorLogging { this: Actor =>
     MyApp.displayActor ! Display.ShowAlert(messages)
   }
 
+  private def connectionTimeoutMessage(name: String) : Tuple3[String, String, String]  = {
+    return (
+    "Connection Timeout",
+    s"Failed to send the message to $name.",
+    "Please try again later."
+    )
+  }
+
   // We create a temporary actor to handle the message passing
   // This approach is refer from Learning Akka, Chapter 3, section
   // "Designing with Tell"
   private def buildExtraActor: ActorRef = {
     return context.actorOf(Props(new Actor {
       override def receive = {
-        case Timeout =>
+        case Timeout(name) =>
           // Inform user about timeout
           // Ask them to try again later.
-          displayAlert(connectionTimeoutMessage)
+          displayAlert(connectionTimeoutMessage(name))
           log.info("Timeout")
 
           // Stop this actor
