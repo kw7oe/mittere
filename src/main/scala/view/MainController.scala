@@ -30,6 +30,7 @@ class MainController(
   var messages: ObservableBuffer[Room.Message] = new ObservableBuffer[Room.Message]()
   private var _room: Option[Room] = None
   private var username: Option[String] = None
+  private var _roomUsers: Option[Set[String]] = None
   final var shouldListenToTyping = true
 
   setupListCell()
@@ -94,20 +95,29 @@ class MainController(
     roomNameLabel.text = _room.get.name
   }
 
+  def roomUsers: Option[Set[String]] = _roomUsers
+  def roomUsers_=(users: Set[String]) {
+    _roomUsers = Some(users)
+    descriptionLabel.text = users.mkString(" · ")
+  }
+
   def showRoom(room: Room, messages: ArrayBuffer[Room.Message], users: Set[String]) {
     this.room = room
     this.messages = messages
-    var description = room.chatRoomType match {
-      case Personal => "online"
-      case Group => users.mkString(" · ")
+    room.chatRoomType match {
+      case Personal => descriptionLabel.text = "online"
+      case Group => roomUsers = users
     }
-    this.descriptionLabel.text = description
     this.messageArea.disable = false
+    messageList.scrollTo(messages.length)
     setupListCell()
   }
 
   def showUnread(room: Room) {
     //tell list cell to show unread
+    if(checkIsMe(room)){
+      return
+    }
     var items = room.chatRoomType match {
       case Personal => userListItems
       case Group => roomListItems
@@ -124,6 +134,9 @@ class MainController(
   }
 
   def hideUnread(room: Room) {
+    if(checkIsMe(room)){
+      return
+    }
     var items = room.chatRoomType match {
       case Personal => userListItems
       case Group => roomListItems
@@ -152,6 +165,9 @@ class MainController(
 
             controller.room = room.value
             controller.showUnread(room.value.unreadNumber)
+            if(checkIsMe(room.value)){
+              controller.isMe = true
+            }
             _room match {
               case Some(c) =>
                 var highlighted = (c.identifier==room.value.identifier)
@@ -263,7 +279,7 @@ class MainController(
     val task = new Runnable {
       def run() {
         Platform.runLater {
-          descriptionLabel.text = ""
+          descriptionLabel.text = roomUsers.get.mkString(" · ")
         }
       }
     }
@@ -273,5 +289,15 @@ class MainController(
   def addMessage(message: Room.Message) {
     messages += message
     messageList.scrollTo(messages.length)
+  }
+
+  def checkIsMe(r: Room):Boolean = {
+    return (username.get+":"+username.get == r.identifier)
+  }
+
+  def updateJoinedUsers(identifier:String, users: Set[String]){
+    if(identifier == room.get.identifier){
+      roomUsers = users
+    }
   }
 }

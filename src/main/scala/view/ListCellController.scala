@@ -15,6 +15,7 @@ class ListCellController(
   private val unreadNumber: Label
 ) {
   private var _room: Option[Room] = None
+  private var _isMe: Option[Boolean] = None
 
   def room = _room
   def room_=(room: Room) {
@@ -22,6 +23,15 @@ class ListCellController(
     name.text = room.name
     if (room.chatRoomType == Group) {
       hideCircle
+    }
+  }
+
+  def isMe = _isMe
+  def isMe_=(bool: Boolean) {
+    _isMe = Some(bool)
+    if(bool){
+      unreadNumber.text = "me"
+      unreadNumber.opacity = 1
     }
   }
 
@@ -56,6 +66,7 @@ class ListCellController(
       removeHighlight()
     }
   }
+
 
   def highlight(){
     hbox.setStyle("-fx-background-color:#34374d;-fx-border-color:#797DA5;-fx-border-width:0 0 1 0;")
