@@ -11,3 +11,59 @@
 .btn:hover{
     -fx-background-color: #797DA5;
 }
+
+.roomList .list-cell:filled{
+    -fx-border-color: #797DA5;
+    -fx-border-width: 0 0 1 0;
+    /* -fx-border-insets: 0 10 0 10; */
+    -fx-padding: 0;
+}
+
+/* The main scrollbar CSS class of ListView */
+.mylistview .scroll-bar:horizontal,
+.mylistview .scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+
+
+/* .mylistview .scroll-bar:horizontal:hover .track,
+.mylistview .scroll-bar:horizontal:pressed .track,
+.mylistview .scroll-bar:vertical:hover .track,
+.mylistview .scroll-bar:vertical:pressed .track{
+     -fx-background-color: derive(#434343,20%);
+	 -fx-opacity: 0.2;
+	 -fx-background-radius: 0em;
+
+} */
+
+/* The main scrollbar **thumb** CSS class on event of "hover" and "pressed" */
+/* .mylistview .scroll-bar .thumb:hover,
+.mylistview .scroll-bar .thumb:pressed{
+    -fx-background-color: derive(black,50%);
+} */
+
+.mylistview .scroll-bar:horizontal .track,
+.mylistview .scroll-bar:vertical .track{
+	/* -fx-background-color: derive(#434343,20%); */
+    /* -fx-opacity: 0.2; */
+    -fx-background-color: transparent;
+	-fx-border-color:transparent;
+    -fx-background-radius: 6px;
+	/* -fx-border-radius:2em; */
+}
+
+.mylistview .scroll-bar .increment-arrow,
+.mylistview .scroll-bar .decrement-arrow
+{	
+	-fx-padding:0;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+.mylistview .scroll-bar:horizontal .thumb,
+.mylistview .scroll-bar:vertical .thumb {
+    -fx-background-color:#797DA5;
+	/* -fx-background-insets: 2, 0, 0; */
+	-fx-background-radius: 6px;
+
+}
