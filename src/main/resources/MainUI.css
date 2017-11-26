@@ -13,8 +13,6 @@
 }
 
 .roomList .list-cell:filled{
-    -fx-border-color: #797DA5;
-    -fx-border-width: 0 0 1 0;
     /* -fx-border-insets: 0 10 0 10; */
     -fx-padding: 0;
 }

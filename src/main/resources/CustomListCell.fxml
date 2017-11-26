@@ -6,21 +6,27 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="hbox" alignment="CENTER" minHeight="30.0" minWidth="170.0" onMouseClicked="#handleShowChat" prefHeight="30.0" prefWidth="170.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
+
+<HBox fx:id="outerContainer" alignment="CENTER" prefWidth="190.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ListCellController">
    <children>
-      <Circle fx:id="onlineStatusCircle" fill="#51b52c" radius="3.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
-         <HBox.margin>
-            <Insets />
-         </HBox.margin></Circle>
-      <Label fx:id="name" prefHeight="30.0" prefWidth="140.0" text="Name" textFill="#fafafc">
-         <font>
-            <Font name="Helvetica Neue" size="11.0" />
-         </font>
-      </Label>
-      <Label fx:id="unreadNumber" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="1.0" opacity="0.0" prefHeight="14.0" prefWidth="14.0" text="0" textAlignment="CENTER" textFill="#fafafc">
-         <font>
-            <Font name="Helvetica Neue" size="9.0" />
-         </font>
-      </Label>
+      <HBox fx:id="hbox" alignment="CENTER" minHeight="30.0" minWidth="170.0" onMouseClicked="#handleShowChat" prefHeight="30.0" prefWidth="170.0" spacing="5.0" style="-fx-border-color: #797DA5; -fx-border-width: 0 0 1 0; -fx-border-insets: 0 0 -1 0;">
+         <children>
+            <Circle fx:id="onlineStatusCircle" fill="#51b52c" radius="3.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Circle>
+            <Label fx:id="name" prefHeight="30.0" prefWidth="140.0" text="Name" textFill="#fafafc">
+               <font>
+                  <Font name="Helvetica Neue" size="11.0" />
+               </font>
+            </Label>
+            <Label fx:id="unreadNumber" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="1.0" opacity="0.0" prefHeight="14.0" prefWidth="14.0" text="0" textAlignment="CENTER" textFill="#fafafc">
+               <font>
+                  <Font name="Helvetica Neue" size="9.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
    </children>
 </HBox>

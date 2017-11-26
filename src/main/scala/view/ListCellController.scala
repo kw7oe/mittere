@@ -9,6 +9,7 @@ import scalafx.Includes._
 
 @sfxml
 class ListCellController(
+  private val outerContainer: HBox,
   private val hbox: HBox,
   private val onlineStatusCircle: Circle,
   private val name: Label,
@@ -69,9 +70,9 @@ class ListCellController(
 
 
   def highlight(){
-    hbox.setStyle("-fx-background-color:#34374d;")
+    outerContainer.setStyle("-fx-background-color:#34374d;")
   }
   def removeHighlight(){
-    hbox.setStyle("-fx-background-color:Transparent;")
+    outerContainer.setStyle("-fx-background-color:Transparent;")
   }
 }
