@@ -16,8 +16,8 @@ object Display {
   // Chat Room related
   case class ShowNewChatRoom(room: Room)
   case class ShowChatRoom(room: Room,
-                          messages: ArrayBuffer[Room.Message],
                           users: Set[String])
+  case class RefreshRoom(room: Room, username: String, action: RoomAction)
 
   // Chatting related
   case class ShowTyping(room: Room, username: String)
@@ -48,17 +48,22 @@ class Display extends Actor with ActorLogging {
       Platform.runLater {
         MyApp.mainController.removeJoin(user)
       }
+    case RefreshRoom(room, username, action) =>
+      Platform.runLater {
+        if (shouldDisplay(room)) {
+          MyApp.mainController.refreshRoom(room, username, action)
+        }
+      }
     case ShowNewChatRoom(room) =>
       Platform.runLater {
         MyApp.mainController.addChatroom(room)
       }
-    case ShowChatRoom(room, messages, users) =>
+    case ShowChatRoom(room, users) =>
       Platform.runLater {
-        MyApp.mainController.showRoom(room, messages, users)
+        MyApp.mainController.showRoom(room, users)
         MyApp.mainController.hideUnread(room)
       }
     case ShowTyping(room, username) =>
-      log.info(s"Send typing with $username")
       if (shouldDisplay(room)) {
         Platform.runLater {
           MyApp.mainController.showStatus(username)

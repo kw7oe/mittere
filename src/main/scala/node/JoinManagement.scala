@@ -10,6 +10,7 @@ trait JoinManagement extends ActorLogging { this: Actor =>
   var superNodeActor: Option[ActorSelection]
   var username: Option[String]
   var usernameToClient: SortedMap[String, ActorRef]
+  var clientToUsername: Map[ActorRef, String]
   var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
 
@@ -34,27 +35,30 @@ trait JoinManagement extends ActorLogging { this: Actor =>
     case DeadLetter(message: SuperNode.Join, _, _) =>
       context.setReceiveTimeout(Duration.Undefined)
       log.info(s"Receive DeadLetter: $message")
+
       if (isJoinDeadLetter(message)) {
         displayAlert(invalidAddressErrorMessage)
       }
     case RequestToJoin(serverAddress, portNumber, name) =>
       log.info("RequestToJoin")
+
       superNodeActor = Some(MyApp.system.actorSelection(s"akka.tcp://chat@$serverAddress:$portNumber/user/super-node"))
       username = Some(name)
       superNodeActor.get ! SuperNode.Join(username.get)
 
-      context.setReceiveTimeout(2 second)
+      context.setReceiveTimeout(5 second)
     case InvalidUsername =>
       context.setReceiveTimeout(Duration.Undefined)
       log.info("Receive InvalidUsername")
+
       displayAlert(invalidUsernameErrorMessage)
     case Joined(users, rooms)  =>
       context.setReceiveTimeout(Duration.Undefined)
-      // Receive online users and rooms info from Manager
       log.info("Joined")
 
       // Keep track of the info locally
       usernameToClient = users
+      clientToUsername = usernameToClient.map(_.swap)
 
       // Create One to One Room for each online users
       usernameToClient.foreach { case (name, ref) =>
@@ -75,9 +79,10 @@ trait JoinManagement extends ActorLogging { this: Actor =>
       // Initialize Display with the info received
       MyApp.displayActor ! Display.Initialize(usernameToRoom, roomNameToRoom, username.get)
     case ReceiveTimeout =>
-      context.setReceiveTimeout(Duration.Undefined)
-      displayAlert(connectionTimeoutMessage)
       log.info("Receive Timeout")
+      context.setReceiveTimeout(Duration.Undefined)
+
+      displayAlert(connectionTimeoutMessage)
   }
 
   private def isJoinDeadLetter(message: SuperNode.Join): Boolean = {

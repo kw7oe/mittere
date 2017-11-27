@@ -7,6 +7,7 @@ trait SessionManagement extends ActorLogging { this: Actor =>
 
   var superNodeActor: Option[ActorSelection]
   var username: Option[String]
+  var clientToUsername: Map[ActorRef, String]
   var usernameToClient: SortedMap[String,ActorRef]
   var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
@@ -27,20 +28,35 @@ trait SessionManagement extends ActorLogging { this: Actor =>
 
       // If the user exists in our record
       userInfo.foreach { value =>
+        val disconnectedUsername = value._1
+        val userRef = value._2
+
         // Remove tracking
-        usernameToClient -= value._1
+        usernameToClient -= disconnectedUsername
 
         // Inform Display to remove user
-        val identifier = Room.unique_identifier(value._1, username.get)
+        val identifier = Room.unique_identifier(disconnectedUsername , username.get)
         val room = usernameToRoom.get(identifier)
         usernameToRoom -= identifier
 
         room.foreach { r =>
           MyApp.displayActor ! Display.RemoveJoin(r)
         }
+
+        // Remove User Actor Ref in the chat room
+        roomNameToRoom.foreach { case (name, room) =>
+          if (room.users.contains(userRef)) {
+            log.info("Contain userRef")
+            room.users -= userRef
+            MyApp.displayActor ! Display.RefreshRoom(room, disconnectedUsername, RemoveUsername)
+          }
+        }
       }
 
+      //  Check if Supernode disconnected
       if (superNodeActor.get.anchorPath.address == remote) {
+
+        // Inform another node to become Supernode
         val firstKey = usernameToClient.firstKey
         if (firstKey == username.get) {
           MyApp.superNodeActor ! SuperNode.BecomeSuperNode(usernameToClient, roomNameToRoom)
@@ -53,6 +69,9 @@ trait SessionManagement extends ActorLogging { this: Actor =>
     case NewUser(name, ref) =>
       // Keep track of new user
       usernameToClient += (name -> ref)
+      clientToUsername += (ref -> name)
+
+      // Create Personal Room with the User
       val identifier = Room.unique_identifier(name, username.get)
       val room = new Room(
         name = name,
@@ -94,10 +113,13 @@ trait SessionManagement extends ActorLogging { this: Actor =>
           userActor ! NewChatRoom(createdRoom)
         }
       }
-    case JoinChatRoom(identifier) =>
-      log.info(s"JoinChatRoom: $identifier")
+    case JoinChatRoom(identifier, name) =>
+      log.info(s"JoinChatRoom: $identifier, $name")
       val room = roomNameToRoom.get(identifier)
-      room.foreach { r => r.users += sender() }
+      room.foreach { r =>
+        r.users += sender()
+        MyApp.displayActor ! Display.RefreshRoom(r, name, AddUsername)
+      }
     case NewChatRoom(room) =>
       // Received broadcast from other node
       // about new room
@@ -110,6 +132,7 @@ trait SessionManagement extends ActorLogging { this: Actor =>
       MyApp.displayActor ! Display.ShowNewChatRoom(room)
   }
 
+  // To create alert message when there is a new supernode
   private def newSuperNodeMessage(path: String): Tuple3[String, String, String] = {
 
     val res = path match {

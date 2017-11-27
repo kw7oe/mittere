@@ -17,7 +17,7 @@ object Node {
   case object NewSuperNode
   case class NewUser(name: String, actorRef: ActorRef)
   case class RequestToCreateChatRoom(roomName: String)
-  case class JoinChatRoom(key: String)
+  case class JoinChatRoom(key: String, username: String)
   case class NewChatRoom(room: Room)
 
   // Chat Management

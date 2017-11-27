@@ -9,7 +9,8 @@ trait ChatManagement extends ActorLogging { this: Actor =>
 
   var superNodeActor: Option[ActorSelection]
   var username: Option[String]
-  var usernameToClient: SortedMap[String,ActorRef]
+  var usernameToClient: SortedMap[String, ActorRef]
+  var clientToUsername: Map[ActorRef, String]
   var usernameToRoom: Map[String, Room]
   var roomNameToRoom: Map[String, Room]
 
@@ -17,26 +18,40 @@ trait ChatManagement extends ActorLogging { this: Actor =>
     case RequestToChatWith(chatRoom) =>
       log.info(s"RequestToChatWith: $chatRoom")
 
+      // Get the room according to the type
       val room = chatRoom.chatRoomType match {
         case Group => roomNameToRoom.get(chatRoom.identifier)
         case Personal => usernameToRoom.get(chatRoom.identifier)
       }
 
       room.foreach { r =>
+
+        // Check if the user is in the `room.users`
         if (!r.users.contains(self)) {
-          // Broadcast to other users
-          superNodeActor.get ! SuperNode.UpdateRoom(chatRoom.identifier)
+          // If not, broadcast to other node that this node
+          // is joining the room. Hence, have the other nodes
+          // update their room data.
+          superNodeActor.get ! SuperNode.UpdateRoom(r.identifier)
           usernameToClient.foreach { case (_, userActor) =>
-            userActor ! JoinChatRoom(chatRoom.identifier)
+            // Inform the actor that this particular node
+            // has join the specified room.
+            userActor ! JoinChatRoom(r.identifier, username.get)
           }
         }
+
+        // Convert the users in the room into their respective
+        // username.
         val users = usernameToClient.filter { case (name, ref) =>
           r.users.contains(ref)
         }.keySet
-        MyApp.displayActor ! Display.ShowChatRoom(chatRoom, r.messages, users)
+
+        // Display the chat room
+        MyApp.displayActor ! Display.ShowChatRoom(r, users)
       }
     case Typing(chatRoom) =>
       log.info(s"Typing: $chatRoom")
+
+
       val room = chatRoom.chatRoomType match {
         case Group => roomNameToRoom.get(chatRoom.identifier)
         case Personal => usernameToRoom.get(chatRoom.identifier)
@@ -49,11 +64,13 @@ trait ChatManagement extends ActorLogging { this: Actor =>
       }
     case ReceiveShowTyping(chatRoom, username) =>
       log.info(s"ReceiveShowTyping: $chatRoom, $username")
+
       if (username != this.username.get) {
         MyApp.displayActor ! Display.ShowTyping(chatRoom, username)
       }
     case RequestToSendMessage(chatRoom, msg) =>
       log.info(s"RequestToSendMessage: $chatRoom, $msg")
+
       val room = chatRoom.chatRoomType match {
         case Group => roomNameToRoom.get(chatRoom.identifier).get
         case Personal => usernameToRoom.get(chatRoom.identifier).get
@@ -76,12 +93,14 @@ trait ChatManagement extends ActorLogging { this: Actor =>
         val extraActor = buildExtraActor
         actor.tell(ReceiveMessage(chatRoom, message), extraActor)
 
+        // Get the username of the actor, to be used in display
+        // error message if needed.
 
-        val name = usernameToClient.map(_.swap).get(actor).getOrElse("unknown")
+        val name = clientToUsername.get(actor).getOrElse("unknown")
+
         // Schedule the timeout after 2 second to the created
         // extra actor
-        context.system.scheduler.scheduleOnce(2 second, extraActor, Timeout(name))
-
+        context.system.scheduler.scheduleOnce(3 second, extraActor, Timeout(name))
       }
     case ReceiveMessage(chatRoom, msg) =>
       log.info(s"ReceiveMessage: $chatRoom, $msg")
@@ -94,6 +113,7 @@ trait ChatManagement extends ActorLogging { this: Actor =>
         case Group => roomNameToRoom.get(chatRoom.identifier)
         case Personal => usernameToRoom.get(chatRoom.identifier)
       }
+
       room.foreach { r => r.messages += msg }
       MyApp.displayActor ! Display.AddMessage(chatRoom,msg)
     case t => log.info(s"Receive unhandled message: $t")

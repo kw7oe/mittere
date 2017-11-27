@@ -78,15 +78,14 @@ class MainController(
 
   def removeJoin(user: Room) {
     userListItems -= user
-    _room match{
+    _room match {
       case Some(c) =>
-        if(user.identifier == c.identifier){
-          descriptionLabel.text="offline"
+        if (user.identifier == c.identifier) {
+          descriptionLabel.text = "offline"
           messageArea.disable = true
         }
       case None=>
     }
-
   }
 
   def room: Option[Room] = _room
@@ -101,9 +100,11 @@ class MainController(
     descriptionLabel.text = users.mkString(" · ")
   }
 
-  def showRoom(room: Room, messages: ArrayBuffer[Room.Message], users: Set[String]) {
+
+
+  def showRoom(room: Room, users: Set[String]) {
     this.room = room
-    this.messages = messages
+    this.messages = room.messages
     room.chatRoomType match {
       case Personal => descriptionLabel.text = "online"
       case Group => roomUsers = users
@@ -234,7 +235,16 @@ class MainController(
     }
   }
 
-  // chatroom controller
+  // Chatroom related
+  def refreshRoom(room: Room, username: String, action: RoomAction) {
+    this.room = room
+
+    action match {
+      case AddUsername => roomUsers = (_roomUsers.get + username)
+      case RemoveUsername => roomUsers = (_roomUsers.get - username)
+    }
+  }
+
   def messages_=(messages: ArrayBuffer[Room.Message]) {
     this.messages = ObservableBuffer(messages)
     messageList.items = this.messages
@@ -243,7 +253,7 @@ class MainController(
   def handleSend() {
     import Node._
     room.foreach { c =>
-        MyApp.clientActor ! RequestToSendMessage(c, messageArea.text.value)
+      MyApp.clientActor ! RequestToSendMessage(c, messageArea.text.value)
     }
   }
 
@@ -293,6 +303,11 @@ class MainController(
   }
 
   def addMessage(message: Room.Message) {
+    // If receive message from the user that is typing
+    // reset the description
+    if (message.from + " is typing" == descriptionLabel.text.value) {
+      resetStatus()
+    }
     messages += message
     messageList.scrollTo(messages.length)
   }
