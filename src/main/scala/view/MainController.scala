@@ -269,7 +269,7 @@ class MainController(
           shouldListenToTyping = true
         }
       }
-      MyApp.scheduler.scheduleOnce(5 second, task)
+      MyApp.scheduler.scheduleOnce(2 second, task)
     }
 
   }
@@ -278,12 +278,18 @@ class MainController(
     descriptionLabel.text = name + " is typing"
     val task = new Runnable {
       def run() {
-        Platform.runLater {
-          descriptionLabel.text = roomUsers.get.mkString(" · ")
-        }
+        Platform.runLater { resetStatus() }
       }
     }
-    MyApp.scheduler.scheduleOnce(5 second, task)
+    MyApp.scheduler.scheduleOnce(2 second, task)
+  }
+
+  def resetStatus() {
+    if (room.get.chatRoomType == Group) {
+      descriptionLabel.text = roomUsers.get.mkString(" · ")
+    } else {
+      descriptionLabel.text = "online"
+    }
   }
 
   def addMessage(message: Room.Message) {
