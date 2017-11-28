@@ -20,6 +20,8 @@ trait SessionManagement extends ActorLogging { this: Actor =>
 
   protected def sessionManagement: Receive = {
     case akka.remote.DisassociatedEvent(local, remote, _) =>
+      log.info("Node receive DisassociatedEvent")
+
       // When Remote User disconnected
       // Check which user disconnected
       val userInfo = usernameToClient.find { case(_, x) =>
@@ -34,22 +36,8 @@ trait SessionManagement extends ActorLogging { this: Actor =>
         // Remove tracking
         usernameToClient -= disconnectedUsername
 
-        // Inform Display to remove user
-        val identifier = Room.unique_identifier(disconnectedUsername , username.get)
-        val room = usernameToRoom.get(identifier)
-        usernameToRoom -= identifier
-
-        room.foreach { r =>
-          MyApp.displayActor ! Display.RemoveJoin(r)
-        }
-
-        // Remove User Actor Ref in the chat room
-        roomNameToRoom.foreach { case (name, room) =>
-          if (room.users.contains(userRef)) {
-            log.info("Contain userRef")
-            room.users -= userRef
-            MyApp.displayActor ! Display.RefreshRoom(room, disconnectedUsername, RemoveUsername)
-          }
+        usernameToClient.foreach { case(_, ref) =>
+          ref ! Node.RemoveUser(disconnectedUsername, userRef)
         }
       }
 
@@ -65,6 +53,7 @@ trait SessionManagement extends ActorLogging { this: Actor =>
     case NewSuperNode =>
       log.info("Receive NewSuperNode")
       superNodeActor = Some(MyApp.system.actorSelection(sender().path))
+
       displayAlert(newSuperNodeMessage(sender().path.address.toString))
     case NewUser(name, ref) =>
       // Keep track of new user
@@ -84,6 +73,28 @@ trait SessionManagement extends ActorLogging { this: Actor =>
 
       // Inform Display to show new user
       MyApp.displayActor ! Display.ShowJoin(room)
+    case RemoveUser(disconnectedUsername, ref) =>
+      // Remove from tracking
+      usernameToClient -= disconnectedUsername
+      clientToUsername -= ref
+
+      val identifier = Room.unique_identifier(disconnectedUsername, username.get)
+      val room = usernameToRoom.get(identifier)
+      usernameToRoom -= identifier
+
+      room.foreach { r =>
+        MyApp.displayActor ! Display.RemoveJoin(r)
+      }
+
+      // Remove from each room
+      roomNameToRoom.foreach { case (name, room) =>
+        if (room.users.contains(ref)) {
+          log.info("Contain userRef")
+          room.users -= ref
+          MyApp.displayActor ! Display.RefreshRoom(room, disconnectedUsername, RemoveUsername)
+        }
+      }
+
     case RequestToCreateChatRoom(roomName) =>
       log.info(s"RequestToCreateChatRoom: $roomName")
 

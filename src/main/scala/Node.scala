@@ -2,6 +2,7 @@ import akka.actor.ActorRef
 import scala.collection.immutable.SortedMap
 
 object Node {
+  case object Ping
   case object Acknowledge
   case class Timeout(name: String)
 
@@ -16,6 +17,7 @@ object Node {
   // SessionManagement
   case object NewSuperNode
   case class NewUser(name: String, actorRef: ActorRef)
+  case class RemoveUser(name: String, actorRef: ActorRef)
   case class RequestToCreateChatRoom(roomName: String)
   case class JoinChatRoom(key: String, username: String)
   case class NewChatRoom(room: Room)

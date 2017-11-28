@@ -4,6 +4,7 @@ scalaVersion := "2.12.3"
 cancelable in Global := true
 lazy val akkaVersion = "2.5.6"
 connectInput in run := true
+mainClass := Some("MyApp")
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 

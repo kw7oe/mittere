@@ -2,6 +2,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import scala.collection.immutable.{HashMap, TreeMap, SortedMap}
 
 object SuperNode {
+  case object Ping
   case class Join(username: String)
   case class ChatRoomCreated(room: Room)
   case class UpdateRoom(key: String)
@@ -25,6 +26,7 @@ class SuperNode extends Actor with ActorLogging {
 
   override def receive = {
     case akka.remote.DisassociatedEvent(local, remote, _) =>
+      log.info("Supernode receive DisassociatedEvent")
       // When Remote User disconnected
       // Check which user disconnected
       val userInfo = usernameToClient.find { case(_, x) =>
@@ -33,9 +35,15 @@ class SuperNode extends Actor with ActorLogging {
 
       // If the user exists in our record
       userInfo.foreach { value =>
-        // Remove tracking
-        usernameToClient -= value._1
+        val disconnectedUsername = value._1
+        val userRef = value._2
 
+        // Remove tracking
+        usernameToClient -= disconnectedUsername
+
+        usernameToClient.foreach { case(_, ref) =>
+          ref ! Node.RemoveUser(disconnectedUsername, userRef)
+        }
       }
     case BecomeSuperNode(clients, rooms) =>
       log.info("I have become super node")
@@ -76,6 +84,7 @@ class SuperNode extends Actor with ActorLogging {
       // To update the room users
       val room = roomNameToRoom.get(key)
       room.foreach { r => r.users += sender() }
+    case Ping => log.info("Receive Ping")
     case _ => log.info("Unknown message received.")
   }
 
