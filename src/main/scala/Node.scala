@@ -2,7 +2,6 @@ import akka.actor.ActorRef
 import scala.collection.immutable.SortedMap
 
 object Node {
-  case object Ping
   case object Acknowledge
   case class Timeout(name: String)
 
